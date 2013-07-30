@@ -18,9 +18,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git@github.com:imotov/elasticsearch-native-script-example.git</connection>
-        <developerConnection>scm:git:git@github.com:imotov/elasticsearch-native-script-example.git</developerConnection>
-        <url>http://github.com/imotov/elasticsearch-native-script-example</url>
+        <connection>scm:git:git@github.com:YannBrrd/identity-resolution.git</connection>
+        <developerConnection>scm:git:git@github.com:YannBrrd/identity-resolution.git</developerConnection>
+        <url>http://github.com/YannBrrd/identity-resolution</url>
     </scm>
 
     <parent>
@@ -88,6 +88,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+        	<groupId>no.priv.garshol</groupId>
+        	<artifactId>duke</artifactId>
+        	<version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
