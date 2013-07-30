@@ -1,7 +1,6 @@
 package org.yaba.identity.plugin;
 
 import org.elasticsearch.plugins.AbstractPlugin;
-import org.elasticsearch.script.ScriptModule;
 
 public class IdentityResolutionPlugin extends AbstractPlugin {
     @Override
