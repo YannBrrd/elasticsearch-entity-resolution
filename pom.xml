@@ -23,12 +23,6 @@
         <url>http://github.com/YannBrrd/identity-resolution</url>
     </scm>
 
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
-
 
     <!-- ============================================================= -->
     <!-- The Elasticsearch version that the project will be built with -->
