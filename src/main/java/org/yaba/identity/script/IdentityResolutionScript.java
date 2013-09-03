@@ -27,11 +27,10 @@ public class IdentityResolutionScript extends AbstractSearchScript {
 		 */
 		@Override
 		public ExecutableScript newScript(@Nullable Map<String, Object> params) {
-			// Example of a mandatory string parameter
+			// Mandatory arr parameter
 			// The XContentMapValues helper class can be used to simplify
 			// parameter parsing
-			String fieldName = params == null ? null : XContentMapValues
-					.nodeStringValue(params.get("field"), null);
+			String fieldName = params == null ? null : params.get("fields");
 			if (fieldName == null) {
 				throw new ElasticSearchIllegalArgumentException(
 						"Missing the field parameter");
