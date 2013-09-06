@@ -5,4 +5,4 @@
  * @author S586883
  *
  */
-package org.yaba.identity.script;
+package org.yaba.entity.script;

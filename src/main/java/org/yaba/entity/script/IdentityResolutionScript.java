@@ -1,4 +1,4 @@
-package org.yaba.identity.script;
+package org.yaba.entity.script;
 
 import org.elasticsearch.script.AbstractSearchScript;
 import org.elasticsearch.ElasticSearchIllegalArgumentException;
@@ -42,17 +42,17 @@ public class IdentityResolutionScript extends AbstractSearchScript {
 
             if (params.get("params") == null) {
                 throw new ElasticSearchIllegalArgumentException(
-                        "Missing the params parameter");
+                        "Missing the entity parameter");
             }
 
-            boolean isArray = XContentMapValues.isArray(params.get("params"));
+            boolean isArray = XContentMapValues.isArray(params.get("entity"));
 
             ArrayList<Map<String, Object>> parameters = null;
 
             if (isArray) {
                 parameters = (ArrayList<Map<String, Object>>) params
-                        .get("params");
-                logger.info("duke parameters: " + parameters);
+                        .get("entity");
+                logger.info("Duke parameters: " + parameters);
             }
 
             return new IdentityResolutionScript(parameters);

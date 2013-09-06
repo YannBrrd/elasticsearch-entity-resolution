@@ -1,9 +1,7 @@
-identity-resolution
+entity-resolution
 ===================
 
-This project aims to build an interactive identity resolution service based on both [Duke](http://code.google.com/p/duke) and [Elasticsearch](http://www.elasticsearch.org)... 
-
-Well it aims to... :-)
+This project aims to build an interactive entity resolution service based on both [Duke](http://code.google.com/p/duke) and [Elasticsearch](http://www.elasticsearch.org)... 
 
 ## Request
  ```
@@ -18,7 +16,7 @@ Well it aims to... :-)
       "script": "identity-resolution",
       "lang": "native",
       "params": {
-        "params": [
+        "entity": [
             {
                 "name" : "name",
                 "cleaners" : ["asciifolding","lowercase"],
