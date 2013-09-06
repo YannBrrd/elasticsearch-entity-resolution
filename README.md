@@ -13,7 +13,7 @@ This project aims to build an interactive entity resolution service based on bot
           "name": "foo"
         }
       },
-      "script": "identity-resolution",
+      "script": "entity-resolution",
       "lang": "native",
       "params": {
         "entity": [
