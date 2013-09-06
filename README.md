@@ -18,7 +18,7 @@ Well it aims to... :-)
       "script": "identity-resolution",
       "lang": "native",
       "params": {
-        "fields": [
+        "params": [
             {
                 "name" : "name",
                 "cleaners" : ["asciifolding","lowercase"],
