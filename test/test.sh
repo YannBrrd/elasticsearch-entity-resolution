@@ -69,14 +69,14 @@ curl -s "localhost:9200/test/_search?pretty=true" -d '{
       "params": {
         "params": [
             {
-                "name" : "Maine",
+                "field" : "name",
                 "cleaners" : ["asciifolding","lowercase"],
                 "comparator" : "levensthein",
                 "low" : 0.5,
                 "high" : 0.95
             },
             {
-                "name" : "surname",
+                "field" : "surname",
                 "cleaners" : ["asciifolding"],
                 "comparator" : "levensthein",
                 "low" : 0.5,

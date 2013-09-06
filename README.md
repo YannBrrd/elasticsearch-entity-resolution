@@ -18,14 +18,14 @@ This project aims to build an interactive entity resolution service based on bot
       "params": {
         "entity": [
             {
-                "name" : "name",
+                "field" : "name",
                 "cleaners" : ["asciifolding","lowercase"],
                 "comparator" : "levensthein",
                 "low" : 0.5,
                 "high" : 0.95
             },
             {
-                "name" : "surname",
+                "field" : "surname",
                 "cleaners" : ["asciifolding"],
                 "comparator" : "levensthein",
                 "low" : 0.5,
