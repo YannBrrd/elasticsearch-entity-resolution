@@ -39,3 +39,7 @@ Well it aims to... :-)
   }
 }
 ```
+
+## Licence 
+
+This project is licended under LGPLv3
