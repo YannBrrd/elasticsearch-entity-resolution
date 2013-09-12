@@ -67,16 +67,18 @@ curl -s "localhost:9200/test/_search?pretty=true" -d '{
       "script": "entity-resolution",
       "lang": "native",
       "params": {
-        "params": [
+        "entity": [
             {
-                "field" : "name",
+                "field" : "city",
+                "value" : "Cambridge",
                 "cleaners" : ["asciifolding","lowercase"],
                 "comparator" : "levensthein",
                 "low" : 0.5,
                 "high" : 0.95
             },
             {
-                "field" : "surname",
+                "field" : "state",
+                "value" : "MA",
                 "cleaners" : ["asciifolding"],
                 "comparator" : "levensthein",
                 "low" : 0.5,

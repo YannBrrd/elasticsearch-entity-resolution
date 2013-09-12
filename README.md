@@ -19,6 +19,7 @@ This project aims to build an interactive entity resolution service based on bot
         "entity": [
             {
                 "field" : "name",
+                "value" : "Arthur",
                 "cleaners" : ["asciifolding","lowercase"],
                 "comparator" : "levensthein",
                 "low" : 0.5,
@@ -26,6 +27,7 @@ This project aims to build an interactive entity resolution service based on bot
             },
             {
                 "field" : "surname",
+                "value" : "Raimbault",
                 "cleaners" : ["asciifolding"],
                 "comparator" : "levensthein",
                 "low" : 0.5,
