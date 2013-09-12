@@ -21,7 +21,7 @@ This project aims to build an interactive entity resolution service based on bot
                 "field" : "name",
                 "value" : "Arthur",
                 "cleaners" : ["asciifolding","lowercase"],
-                "comparator" : "levensthein",
+                "comparator" : "no.priv.garshol.duke.comparators.PersonNameComparator",
                 "low" : 0.5,
                 "high" : 0.95
             },
@@ -29,7 +29,7 @@ This project aims to build an interactive entity resolution service based on bot
                 "field" : "surname",
                 "value" : "Raimbault",
                 "cleaners" : ["asciifolding"],
-                "comparator" : "levensthein",
+                "comparator" : "no.priv.garshol.duke.comparators.Levenshtein",
                 "low" : 0.5,
                 "high" : 0.95
             }            

@@ -85,7 +85,8 @@ public class EntityResolutionScript extends AbstractSearchScript {
 
 		HashMap<String, Collection<String>> props = new HashMap<String, Collection<String>>();
 		HashMap<String, Collection<String>> props2 = new HashMap<String, Collection<String>>();
-		HashMap<String, HashMap<String, Double>> minMax = new HashMap<String, HashMap<String, Double>>();
+
+		HashMap<String, HashMap<String, Object>> params = new HashMap<String, HashMap<String, Object>>();
 
 		Iterator<Map<String, Object>> it = entity.iterator();
 
@@ -95,24 +96,29 @@ public class EntityResolutionScript extends AbstractSearchScript {
 			String field = (String) value.get("field");
 			String fieldValue = (String) value.get("value");
 
+			props.put(field, Collections.singleton(fieldValue));
+
 			Double maxValue = (value.get("high") == null ? 0.0 : Double
 					.valueOf(((Double) value.get("high"))));
 			Double minValue = (value.get("low") == null ? 0.0 : Double
 					.valueOf(((Double) value.get("low"))));
 
-			HashMap<String, Double> map = new HashMap<String, Double>();
+			String comparator = (value.get("comparator") == null ? null
+					: (String) value.get("comparator"));
+
+			HashMap<String, Object> map = new HashMap<String, Object>();
 
 			map.put("high", maxValue);
 			map.put("low", minValue);
+			map.put("comparator", comparator);
 
-			minMax.put(fieldValue, map);
+			params.put(fieldValue, map);
 
-			props.put(field, Collections.singleton(fieldValue));
 		}
 
 		Record r1 = new RecordImpl(props);
-		DocLookup doc = doc();
 
+		DocLookup doc = doc();
 		Set<String> docKeys = props.keySet();
 		Iterator<String> it2 = docKeys.iterator();
 
@@ -127,7 +133,7 @@ public class EntityResolutionScript extends AbstractSearchScript {
 
 		Record r2 = new RecordImpl(props2);
 
-		return new Double(compare(r1, r2, minMax)).floatValue();
+		return new Double(compare(r1, r2, params)).floatValue();
 	}
 
 	/**
@@ -135,10 +141,8 @@ public class EntityResolutionScript extends AbstractSearchScript {
 	 * same real-world entity.
 	 */
 	private double compare(Record r1, Record r2,
-			HashMap<String, HashMap<String, Double>> minMax) {
+			HashMap<String, HashMap<String, Object>> params) {
 		double prob = 0.5;
-
-		Comparator comp = new Levenshtein();
 
 		for (String propname : r1.getProperties()) {
 
@@ -160,13 +164,20 @@ public class EntityResolutionScript extends AbstractSearchScript {
 						continue;
 
 					try {
-						double p = compare(v1, v2, minMax.get(v1).get("high"),
-								minMax.get(v1).get("low"), comp);
+
+						Class<?> kompClass = Class.forName((String) params.get(
+								v1).get("comparator"));
+						Comparator comp = (Comparator) kompClass.newInstance();
+
+						double p = compare(v1, v2,
+								(Double) params.get(v1).get("high"),
+								(Double) params.get(v1).get("low"), comp);
 						high = Math.max(high, p);
 					} catch (Exception e) {
 						throw new RuntimeException("Comparison of values '"
 								+ v1 + "' and " + "'" + v2 + "' with "
-								+ "Levenshtein failed", e);
+								+ (String) params.get(v1).get("comparator")
+								+ " failed", e);
 					}
 				}
 			}

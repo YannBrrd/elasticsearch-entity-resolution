@@ -70,7 +70,7 @@ curl -s "localhost:9200/test/_search?pretty=true" -d '{
                 "field" : "city",
                 "value" : "South",
                 "cleaners" : ["asciifolding","lowercase"],
-                "comparator" : "levensthein",
+                "comparator" : "no.priv.garshol.duke.comparators.Levenshtein",
                 "low" : 0.1,
                 "high" : 0.95
             },
@@ -78,7 +78,7 @@ curl -s "localhost:9200/test/_search?pretty=true" -d '{
                 "field" : "state",
                 "value" : "ME",
                 "cleaners" : ["asciifolding"],
-                "comparator" : "levensthein",
+                "comparator" : "no.priv.garshol.duke.comparators.Levenshtein",
                 "low" : 0.1,
                 "high" : 0.95
             }            
