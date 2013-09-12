@@ -9,6 +9,12 @@ To understand basics, go to [Duke project documentation](http://code.google.com/
 
 A list of [available comparators] (http://code.google.com/p/duke/wiki/Comparator) is available [here](http://code.google.com/p/duke/wiki/Comparator).
 
+## Install
+
+``` 
+$ plugin -i entity-resolution -url 	http://goo.gl/LMF3wK
+```
+
 ## Request
  ```javascript
 {
