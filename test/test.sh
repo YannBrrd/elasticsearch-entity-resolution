@@ -60,9 +60,7 @@ curl -s "localhost:9200/test/_search?pretty=true" -d '{
   "query": {
     "custom_score": {
       "query": {
-        "match": {
-          "name": "Maine"
-        }
+        "match_all": {}
       },
       "script": "entity-resolution",
       "lang": "native",
@@ -70,18 +68,18 @@ curl -s "localhost:9200/test/_search?pretty=true" -d '{
         "entity": [
             {
                 "field" : "city",
-                "value" : "Cambridge",
+                "value" : "South",
                 "cleaners" : ["asciifolding","lowercase"],
                 "comparator" : "levensthein",
-                "low" : 0.5,
+                "low" : 0.1,
                 "high" : 0.95
             },
             {
                 "field" : "state",
-                "value" : "MA",
+                "value" : "ME",
                 "cleaners" : ["asciifolding"],
                 "comparator" : "levensthein",
-                "low" : 0.5,
+                "low" : 0.1,
                 "high" : 0.95
             }            
         ]

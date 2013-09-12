@@ -1,7 +1,6 @@
 package org.yaba.entity.script;
 
 import no.priv.garshol.duke.Comparator;
-import no.priv.garshol.duke.Property;
 import no.priv.garshol.duke.Record;
 import no.priv.garshol.duke.RecordImpl;
 import no.priv.garshol.duke.comparators.Levenshtein;
@@ -16,12 +15,13 @@ import org.elasticsearch.common.Nullable;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
-import org.yaba.entity.config.EntityConfiguration;
+import org.elasticsearch.index.fielddata.ScriptDocValues;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,11 +61,14 @@ public class EntityResolutionScript extends AbstractSearchScript {
 			ArrayList<Map<String, Object>> parameters = null;
 
 			if (isArray) {
-				parameters = (ArrayList<Map<String, Object>>) params.get("entity");
-				logger.info("Duke parameters: " + parameters);
+				parameters = (ArrayList<Map<String, Object>>) params
+						.get("entity");
+			} else {
+				{
+					throw new ElasticSearchIllegalArgumentException(
+							"entity parameters should be an array");
+				}
 			}
-			
-			logger.info("Entity Params : " + params.get("entity").getClass());
 
 			return new EntityResolutionScript(parameters);
 
@@ -74,12 +77,119 @@ public class EntityResolutionScript extends AbstractSearchScript {
 	}
 
 	private EntityResolutionScript(ArrayList<Map<String, Object>> params) {
-		logger.info("------> Duke params " + params);
-
-		EntityConfiguration conf = new EntityConfiguration(params);
-
 		this.entity = params;
+	}
 
+	@Override
+	public float runAsFloat() {
+
+		HashMap<String, Collection<String>> props = new HashMap<String, Collection<String>>();
+		HashMap<String, Collection<String>> props2 = new HashMap<String, Collection<String>>();
+		HashMap<String, HashMap<String, Double>> minMax = new HashMap<String, HashMap<String, Double>>();
+
+		Iterator<Map<String, Object>> it = entity.iterator();
+
+		while (it.hasNext()) {
+			Map<String, Object> value = it.next();
+
+			String field = (String) value.get("field");
+			String fieldValue = (String) value.get("value");
+
+			Double maxValue = (value.get("high") == null ? 0.0 : Double
+					.valueOf(((Double) value.get("high"))));
+			Double minValue = (value.get("low") == null ? 0.0 : Double
+					.valueOf(((Double) value.get("low"))));
+
+			HashMap<String, Double> map = new HashMap<String, Double>();
+
+			map.put("high", maxValue);
+			map.put("low", minValue);
+
+			minMax.put(fieldValue, map);
+
+			props.put(field, Collections.singleton(fieldValue));
+		}
+
+		Record r1 = new RecordImpl(props);
+		DocLookup doc = doc();
+
+		Set<String> docKeys = props.keySet();
+		Iterator<String> it2 = docKeys.iterator();
+
+		while (it2.hasNext()) {
+			String key = (String) it2.next();
+
+			String value = ((ScriptDocValues.Strings) (doc.get(key)))
+					.getValue();
+			props2.put(key, value == null ? Collections.singleton("")
+					: Collections.singleton(value));
+		}
+
+		Record r2 = new RecordImpl(props2);
+
+		return new Double(compare(r1, r2, minMax)).floatValue();
+	}
+
+	/**
+	 * Compares two records and returns the probability that they represent the
+	 * same real-world entity.
+	 */
+	private double compare(Record r1, Record r2,
+			HashMap<String, HashMap<String, Double>> minMax) {
+		double prob = 0.5;
+
+		Comparator comp = new Levenshtein();
+
+		for (String propname : r1.getProperties()) {
+
+			Collection<String> vs1 = r1.getValues(propname);
+			Collection<String> vs2 = r2.getValues(propname);
+
+			if (vs1 == null || vs1.isEmpty() || vs2 == null || vs2.isEmpty())
+				continue; // no values to compare, so skip
+
+			double high = 0.0;
+			for (String v1 : vs1) {
+				if (v1.equals("")) // FIXME: these values shouldn't be here at
+									// all
+					continue;
+
+				for (String v2 : vs2) {
+					if (v2.equals("")) // FIXME: these values shouldn't be here
+										// at all
+						continue;
+
+					try {
+						double p = compare(v1, v2, minMax.get(v1).get("high"),
+								minMax.get(v1).get("low"), comp);
+						high = Math.max(high, p);
+					} catch (Exception e) {
+						throw new RuntimeException("Comparison of values '"
+								+ v1 + "' and " + "'" + v2 + "' with "
+								+ "Levenshtein failed", e);
+					}
+				}
+			}
+			prob = Utils.computeBayes(prob, high);
+		}
+		return prob;
+	}
+
+	/**
+	 * Returns the probability that the records v1 and v2 came from represent
+	 * the same entity, based on high and low probability settings etc.
+	 */
+	public double compare(String v1, String v2, double high, double low,
+			Comparator comparator) {
+
+		if (comparator == null)
+			return 0.5; // we ignore properties with no comparator
+
+		double sim = comparator.compare(v1, v2);
+		if (sim >= 0.5)
+			return ((high - 0.5) * (sim * sim)) + 0.5;
+		else
+			return low;
 	}
 
 	@Override
@@ -87,94 +197,4 @@ public class EntityResolutionScript extends AbstractSearchScript {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public float runAsFloat() {
-
-		HashMap<String, Collection<String>> props = new HashMap<String, Collection<String>>();
-
-		java.util.Iterator<Map<String, Object>> it = entity.iterator();
-
-		while (it.hasNext()) {
-			Map<String, Object> value = it.next();
-
-			String field = (String) value.get("field");
-			
-			logger.info("------> Field " + field);
-			
-			String fieldValue = (String) value.get("value");
-			
-			logger.info("------> Value " + value);
-			
-			props.put(field, Collections.singleton(fieldValue));
-
-		}
-		
-		Record r1 = new RecordImpl(props);
-		
-		
-		DocLookup doc = doc();
-		
-		Set docKeys = props.keySet();
-		
-		props.clear();
-		
-		java.util.Iterator it2 = docKeys.iterator();
-		
-		while (it2.hasNext()) {
-			String key = (String) it2.next();
-			
-			logger.info("------> Key " + key);
-			
-			String value = (String) doc.get(key);
-			
-			logger.info("------> Value " + value);
-			
-			props.put(key, Collections.singleton(value));
-		}
-		
-		Record r2 = new RecordImpl (props);
-
-		return new Double(compare(r1,r2)).floatValue();
-	}
-
-	  /**
-	   * Compares two records and returns the probability that they
-	   * represent the same real-world entity.
-	   */
-	  public double compare(Record r1, Record r2) {
-	    double prob = 0.5;
-	    
-	    Comparator comp = new Levenshtein();
-	    
-	    for (String propname : r1.getProperties()) {
-	      
-	      Collection<String> vs1 = r1.getValues(propname);
-	      Collection<String> vs2 = r2.getValues(propname);
-	      if (vs1 == null || vs1.isEmpty() || vs2 == null || vs2.isEmpty())
-	        continue; // no values to compare, so skip
-	      
-	      double high = 0.0;
-	      for (String v1 : vs1) {
-	        if (v1.equals("")) // FIXME: these values shouldn't be here at all
-	          continue;
-	        
-	        for (String v2 : vs2) {
-	          if (v2.equals("")) // FIXME: these values shouldn't be here at all
-	            continue;
-	        
-	          try {
-	            double p = comp.compare(v1, v2);
-	            high = Math.max(high, p);
-	          } catch (Exception e) {
-	            throw new RuntimeException("Comparison of values '" + v1 + "' and "+
-	                                       "'" + v2 + "' with " +
-	                                       "Levenshtein failed", e);
-	          }
-	        }
-	      }
-	      prob = Utils.computeBayes(prob, high);
-	    }
-	    return prob;
-	  }
 }
