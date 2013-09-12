@@ -1,7 +1,7 @@
 entity-resolution
 ===================
 
-This project is an interactive entity resolution plugin based on both [Duke](http://code.google.com/p/duke) for [Elasticsearch](http://www.elasticsearch.org). Bascally, it uses (Bayesian probabilities)[http://en.wikipedia.org/wiki/Bayesian_probability] to compute probability.
+This project is an interactive entity resolution plugin based on both [Duke](http://code.google.com/p/duke) for [Elasticsearch](http://www.elasticsearch.org). Bascally, it uses [Bayesian probabilities] (http://en.wikipedia.org/wiki/Bayesian_probability) to compute probability.
 
 It is usable as is, though ```cleaners``` are not yet implemented.
 
