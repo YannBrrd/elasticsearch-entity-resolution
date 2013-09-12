@@ -1,13 +1,13 @@
 entity-resolution
 ===================
 
-This project is an interactive entity resolution plugin based on both [Duke](http://code.google.com/p/duke) for [Elasticsearch](http://www.elasticsearch.org). Bascally, it uses [Bayesian probabilities] (http://en.wikipedia.org/wiki/Bayesian_probability) to compute probability.
+This project is an interactive entity resolution plugin for [Elasticsearch](http://www.elasticsearch.org) based on [Duke](http://code.google.com/p/duke). Basically, it uses [Bayesian probabilities] (http://en.wikipedia.org/wiki/Bayesian_probability) to compute probability. You can pretty much use it an interactive deduplication engine.
 
 It is usable as is, though ```cleaners``` are not yet implemented.
 
-Tu understand basics, go to [Duke project documentation](http://code.google.com/p/duke/wiki/XMLConfig).
+To understand basics, go to [Duke project documentation](http://code.google.com/p/duke/wiki/XMLConfig).
 
-A list of available comparators is available [here](http://code.google.com/p/duke/wiki/Comparator).
+A list of [available comparators] (http://code.google.com/p/duke/wiki/Comparator) is available [here](http://code.google.com/p/duke/wiki/Comparator).
 
 ## Request
  ```javascript
@@ -50,10 +50,12 @@ A list of available comparators is available [here](http://code.google.com/p/duk
 * ```field``` is the name of the field to compare to.
 * ```value``` is the value of the field to compare.
 * ```cleaners``` is the list of data cleaners to apply (not implemented yet). Should always be an array.
-* ```comparator``` is the full qualified class name of the comprator to use. Note : you can implement your own, and put it in the claspath. It should work (not tested yet).
+* ```comparator``` is the full qualified class name of the comparator to use. Note : you can implement your own, and put it in the claspath. It should work (not tested yet).
 * ```low``` is the lowest probability for this field (if the probability is inferior, this one will be used).
 * ```high``` is the highest probability for this field (if the probability is superior, this one will be used).
 
 ## Licence 
 
 This project is licended under LGPLv3
+
+Copyright (c) 2013 Yann Barraud
