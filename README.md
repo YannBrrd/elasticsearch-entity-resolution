@@ -21,45 +21,155 @@ $ plugin -i entity-resolution -url 	http://goo.gl/LMF3wK
   "query": {
     "custom_score": {
       "query": {
-        "match": {
-          "name": "foo"
-        }
+        "match_all": {}
       },
       "script": "entity-resolution",
       "lang": "native",
       "params": {
-        "entity": [
+        "entity": {
+          "fields": [
             {
-                "field" : "name",
-                "value" : "Arthur",
-                "cleaners" : ["asciifolding","lowercase"],
-                "comparator" : "no.priv.garshol.duke.comparators.PersonNameComparator",
-                "low" : 0.5,
-                "high" : 0.95
+              "field": "city",
+              "value": "South",
+              "cleaners": [
+                "no.priv.garshol.duke.cleaners.TrimCleaner",
+                "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+              ],
+              "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
+              "low": 0.1,
+              "high": 0.95
             },
             {
-                "field" : "surname",
-                "value" : "Raimbault",
-                "cleaners" : ["asciifolding"],
-                "comparator" : "no.priv.garshol.duke.comparators.Levenshtein",
-                "low" : 0.5,
-                "high" : 0.95
-            }            
-        ]
+              "field": "state",
+              "value": "ME",
+              "cleaners": [
+                "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+              ],
+              "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
+              "low": 0.1,
+              "high": 0.95
+            },
+            {
+              "field": "population",
+              "value": "25002",
+              "cleaners": ["no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"],
+              "comparator": "no.priv.garshol.duke.comparators.NumericComparator",
+              "low": 0.1,
+              "high": 0.95
+            }
+          ]
+        }
       }
     }
   }
 }
 ```
 
-* ```entity``` should always be an array.
+## Parametrization
+### fields
+
+List of fields to compare, and parametrization. Should always be an array.
 * ```field``` is the name of the field to compare to.
 * ```value``` is the value of the field to compare.
-* ```cleaners``` is the list of data cleaners to apply (not implemented yet). Should always be an array.
+* ```cleaners``` is the list of data cleaners to apply. Should always be an array. Should always be full qualified class name.
 * ```comparator``` is the full qualified class name of the comparator to use. Note : you can implement your own, and put it in the claspath. It should work (not tested yet).
 * ```low``` is the lowest probability for this field (if the probability is inferior, this one will be used).
 * ```high``` is the highest probability for this field (if the probability is superior, this one will be used).
 
+## Run example
+
+### Request
+
+```javascript
+{
+  "size": 4,
+  "query": {
+    "custom_score": {
+      "query": {
+        "match_all": {}
+      },
+      "script": "entity-resolution",
+      "lang": "native",
+      "params": {
+        "entity": {
+          "fields": [
+            {
+              "field": "city",
+              "value": "South",
+              "cleaners": [
+                "no.priv.garshol.duke.cleaners.TrimCleaner",
+                "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+              ],
+              "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
+              "low": 0.1,
+              "high": 0.95
+            },
+            {
+              "field": "state",
+              "value": "ME",
+              "cleaners": [
+                "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+              ],
+              "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
+              "low": 0.1,
+              "high": 0.95
+            },
+            {
+              "field": "population",
+              "value": "26000",
+              "cleaners": [
+                "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
+              ],
+              "comparator": "no.priv.garshol.duke.comparators.NumericComparator",
+              "low": 0.1,
+              "high": 0.95
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+### Response
+
+```javascript
+{
+  "took" : 29,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 16,
+    "max_score" : 0.95843065,
+    "hits" : [ {
+      "_index" : "test",
+      "_type" : "city",
+      "_id" : "3",
+      "_score" : 0.95843065, "_source" : {"city": "South Portland", "state": "ME", "population": 25002}
+    }, {
+      "_index" : "test",
+      "_type" : "city",
+      "_id" : "5",
+      "_score" : 0.19, "_source" : {"city": "Portland", "state": "ME", "population": 66194}
+    }, {
+      "_index" : "test",
+      "_type" : "city",
+      "_id" : "4",
+      "_score" : 0.03672479, "_source" : {"city": "Essex", "state": "VT", "population": 19587}
+    }, {
+      "_index" : "test",
+      "_type" : "city",
+      "_id" : "2",
+      "_score" : 0.029812464, "_source" : {"city": "South Burlington", "state": "VT", "population": 17904}
+    } ]
+  }
+}
+```
 ## Licence 
 
 This project is licended under LGPLv3

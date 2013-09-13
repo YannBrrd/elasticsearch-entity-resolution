@@ -57,6 +57,7 @@ curl -XPUT "localhost:9200/test/city/10" -d '{"city": "Boston", "state": "MA", "
 curl -XPOST "http://localhost:9200/test/_refresh"
 echo
 curl -s "localhost:9200/test/_search?pretty=true" -d '{
+  "size": 4,
   "query": {
     "custom_score": {
       "query": {
@@ -65,27 +66,43 @@ curl -s "localhost:9200/test/_search?pretty=true" -d '{
       "script": "entity-resolution",
       "lang": "native",
       "params": {
-        "entity": [
+        "entity": {
+          "fields": [
             {
-                "field" : "city",
-                "value" : "South",
-                "cleaners" : ["asciifolding","lowercase"],
-                "comparator" : "no.priv.garshol.duke.comparators.Levenshtein",
-                "low" : 0.1,
-                "high" : 0.95
+              "field": "city",
+              "value": "South",
+              "cleaners": [
+                "no.priv.garshol.duke.cleaners.TrimCleaner",
+                "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+              ],
+              "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
+              "low": 0.1,
+              "high": 0.95
             },
             {
-                "field" : "state",
-                "value" : "ME",
-                "cleaners" : ["asciifolding"],
-                "comparator" : "no.priv.garshol.duke.comparators.Levenshtein",
-                "low" : 0.1,
-                "high" : 0.95
-            }            
-        ]
+              "field": "state",
+              "value": "ME",
+              "cleaners": [
+                "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+              ],
+              "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
+              "low": 0.1,
+              "high": 0.95
+            },
+            {
+              "field": "population",
+              "value": "26000",
+              "cleaners": [
+                "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
+              ],
+              "comparator": "no.priv.garshol.duke.comparators.NumericComparator",
+              "low": 0.1,
+              "high": 0.95
+            }
+          ]
+        }
       }
     }
   }
-}
-'
+}'
 
