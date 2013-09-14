@@ -13,6 +13,8 @@ A list of [available comparators] (http://code.google.com/p/duke/wiki/Comparator
 
 ## Install
 
+Download at [Bintray](http://dl.bintray.com/yann-barraud/elasticsearch-entity-resolution)
+
 ``` 
 $ plugin -i entity-resolution -url 	http://goo.gl/DGQuUe
 ```
