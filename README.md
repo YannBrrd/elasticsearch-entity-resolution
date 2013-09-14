@@ -1,4 +1,4 @@
-[![Build Status](http://travis-ci.org/YannBrrd/elasticsearch-entity-resolution.png)](http://travis-ci.org/YannBrrd/elasticsearch-entity-resolution)
+[![Build Status](https://travis-ci.org/YannBrrd/elasticsearch-entity-resolution.png)](http://travis-ci.org/YannBrrd/elasticsearch-entity-resolution)
 
 
 
