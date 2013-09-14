@@ -83,7 +83,7 @@
         </dependency>
 
         <dependency>
-        	<groupId>no.priv.garshol</groupId>
+        	<groupId>no.priv.garshol.duke</groupId>
         	<artifactId>duke</artifactId>
         	<version>1.0</version>
         </dependency>
