@@ -145,6 +145,26 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>			
+				<configuration>				
+					<executable>curl</executable>
+					<arguments>
+						<argument>-XDELETE</argument>
+						<argument>-u${env.CI_DEPLOY_USERNAME}:${env.CI_DEPLOY_PASSWORD}</argument>
+						<argument>https://api.bintray.com/content/yann-barraud/elasticsearch-entity-resolution/elasticsearch-entity-resolution/${project.version}</argument>
+					</arguments>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
