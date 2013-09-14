@@ -10,7 +10,7 @@ A list of [available comparators] (http://code.google.com/p/duke/wiki/Comparator
 ## Install
 
 ``` 
-$ plugin -i entity-resolution -url 	http://goo.gl/LMF3wK
+$ plugin -i entity-resolution -url 	http://goo.gl/DGQuUe
 ```
 
 ## Request
