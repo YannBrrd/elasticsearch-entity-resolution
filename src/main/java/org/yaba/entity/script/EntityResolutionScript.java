@@ -6,6 +6,7 @@ import no.priv.garshol.duke.Record;
 import no.priv.garshol.duke.RecordImpl;
 import no.priv.garshol.duke.comparators.Levenshtein;
 import no.priv.garshol.duke.utils.Utils;
+import no.priv.garshol.duke.utils.ObjectUtils;
 
 import org.elasticsearch.script.AbstractSearchScript;
 import org.elasticsearch.ElasticSearchException;
@@ -73,8 +74,6 @@ public class EntityResolutionScript extends AbstractSearchScript {
                     .get("fields");
 
         Iterator<Map<String, Object>> it = fieldsParams.iterator();
-        Class<?> klass;
-
         while (it.hasNext()) {
             Map<String, Object> value = it.next();
             HashMap<String, Object> map = new HashMap<String, Object>();
@@ -89,23 +88,9 @@ public class EntityResolutionScript extends AbstractSearchScript {
             while (cleanIt.hasNext()) {
                 String cleanerName = (String) cleanIt.next();
 
-                Cleaner cleaner = null;
-
-                try {
-                    klass = Class.forName(cleanerName);
-                    cleaner = (Cleaner) klass.newInstance();
-                    cleanList.add(cleaner);
-                    fieldValue = cleaner.clean(fieldValue);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException("Class " + cleanerName
-                            + " not found", e);
-                } catch (InstantiationException e) {
-                    throw new RuntimeException("Instanciation of class "
-                            + cleanerName + " failed", e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Instanciation of class "
-                            + cleanerName + " failed", e);
-                }
+                Cleaner cleaner = (Cleaner) ObjectUtils.instantiate(cleanerName);
+                cleanList.add(cleaner);
+                fieldValue = cleaner.clean(fieldValue);
             }
 
             map.put("cleaners", cleanList);
@@ -120,22 +105,7 @@ public class EntityResolutionScript extends AbstractSearchScript {
             String comparatorName = (value.get("comparator") == null ? Levenshtein.class
                     .getName() : (String) value.get("comparator"));
 
-            Comparator comp = null;
-
-            try {
-                klass = Class.forName(comparatorName);
-                comp = (Comparator) klass.newInstance();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Class " + comparatorName
-                        + " not found", e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException("Instanciation of class "
-                        + comparatorName + " failed", e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Instanciation of class "
-                        + comparatorName + " failed", e);
-            }
-
+            Comparator comp = (Comparator) ObjectUtils.instantiate(comparatorName);
             map.put("high", maxValue);
             map.put("low", minValue);
             map.put("comparator", comp);
