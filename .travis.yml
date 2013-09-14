@@ -1,6 +1,8 @@
 language: java
-before_install: git clone -b travis `git config --get remote.origin.url` target/travis
-script: mvn clean && mvn deploy --settings target/travis/settings.xml
+before_install: 
+  - git clone -b travis `git config --get remote.origin.url` target/travis
+  - mvn clean
+script: mvn deploy --settings target/travis/settings.xml
 branches:
   except:
   - travis
