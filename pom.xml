@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.yaba</groupId>
 	<artifactId>elasticsearch-identity-resolution-plugin</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.2</version>
 	<packaging>jar</packaging>
 	<description>ElasticSearch Plugin for Identity Resolution</description>
 	<inceptionYear>2013</inceptionYear>
