@@ -1,3 +1,7 @@
+[![Build Status](http://travis-ci.org/YannBrrd/elasticsearch-entity-resolution.png)](http://travis-ci.org/YannBrrd/elasticsearch-entity-resolution)
+
+
+
 elasticsearch-entity-resolution
 ===================
 
