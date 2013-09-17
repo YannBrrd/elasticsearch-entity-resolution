@@ -35,7 +35,7 @@
 	<!-- ============================================================= -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<elasticsearch.version>0.90.3</elasticsearch.version>
+		<elasticsearch.version>0.90.4</elasticsearch.version>
 	</properties>
 
 	<!-- ============================================================= -->
@@ -160,7 +160,8 @@
 					<executable>curl</executable>
 					<arguments>
 						<argument>-XDELETE</argument>
-						<argument>-u${env.CI_DEPLOY_USERNAME}:${env.CI_DEPLOY_PASSWORD}</argument>
+						<argument>-u</argument>
+						<argument>${env.CI_DEPLOY_USERNAME}:${env.CI_DEPLOY_PASSWORD}</argument>
 						<argument>https://api.bintray.com/content/yann-barraud/elasticsearch-entity-resolution/elasticsearch-entity-resolution/${project.version}</argument>
 					</arguments>
 				</configuration>

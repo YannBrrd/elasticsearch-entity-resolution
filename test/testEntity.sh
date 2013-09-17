@@ -6,19 +6,6 @@ curl -XPUT "http://localhost:9200/test/" -d '{
         "index.number_of_replicas": 0
     },
     "mappings": {
-        "state": {
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "capital": {
-                    "type": "string"
-                },
-                "nickname": {
-                    "type": "string"
-                }
-            }
-        },
         "city": {
             "properties": {
                 "city": {
@@ -36,12 +23,6 @@ curl -XPUT "http://localhost:9200/test/" -d '{
     }
 }'
 echo
-curl -XPUT "localhost:9200/test/state/CT" -d '{"name": "Connecticut", "capital": "Hartford", "nickname": "Constitution State"}'
-curl -XPUT "localhost:9200/test/state/ME" -d '{"name": "Maine", "capital": "Augusta", "nickname": "Lumber State"}'
-curl -XPUT "localhost:9200/test/state/MA" -d '{"name": "Massachusetts", "capital": "Boston", "nickname": "Bay State"}'
-curl -XPUT "localhost:9200/test/state/NH" -d '{"name": "New Hampshire", "capital": "Concord", "nickname": "Granite State"}'
-curl -XPUT "localhost:9200/test/state/RI" -d '{"name": "Rhode Island", "capital": "Providence", "nickname": "Little Rhody"}'
-curl -XPUT "localhost:9200/test/state/VT" -d '{"name": "Vermont", "capital": "Montpelier", "nickname": "Green Mountain State"}'
 
 curl -XPUT "localhost:9200/test/city/1" -d '{"city": "Cambridge", "state": "MA", "population": 105162}'
 curl -XPUT "localhost:9200/test/city/2" -d '{"city": "South Burlington", "state": "VT", "population": 17904}'

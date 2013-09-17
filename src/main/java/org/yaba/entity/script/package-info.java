@@ -2,7 +2,7 @@
  * 
  */
 /**
- * @author S586883
+ * @author Yann Barraud
  *
  */
 package org.yaba.entity.script;

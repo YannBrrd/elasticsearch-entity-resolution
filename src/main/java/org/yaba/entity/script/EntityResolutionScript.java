@@ -8,6 +8,7 @@ import no.priv.garshol.duke.comparators.Levenshtein;
 import no.priv.garshol.duke.utils.Utils;
 import no.priv.garshol.duke.utils.ObjectUtils;
 
+import org.elasticsearch.node.Node;
 import org.elasticsearch.script.AbstractSearchScript;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.ElasticSearchIllegalArgumentException;
@@ -15,6 +16,13 @@ import org.elasticsearch.script.ExecutableScript;
 import org.elasticsearch.script.NativeScriptFactory;
 import org.elasticsearch.search.lookup.DocLookup;
 import org.elasticsearch.common.Nullable;
+import org.elasticsearch.common.cache.Cache;
+import org.elasticsearch.common.cache.CacheBuilder;
+import org.elasticsearch.common.collect.Tuple;
+import org.elasticsearch.common.component.AbstractComponent;
+import org.elasticsearch.common.inject.Inject;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.fielddata.ScriptDocValues;
 
 import java.util.ArrayList;
@@ -23,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unchecked")
 public class EntityResolutionScript extends AbstractSearchScript {
@@ -34,13 +43,47 @@ public class EntityResolutionScript extends AbstractSearchScript {
 
     private Record comparedRecord = null;
     private HashMap<String, HashMap<String, Object>> entityParams = new HashMap<String, HashMap<String, Object>>();
+    private final String configIndex = "entity-index";
+    private final String configType = "configuration";
+    private final String field = "configuration";
 
     /**
      * Native scripts are build using factories that are registered in the
      * {@link org.elasticsearch.examples.nativescript.plugin.NativeScriptExamplesPlugin#onModule(org.elasticsearch.script.ScriptModule)}
      * method when plugin is loaded.
      */
-    public static class Factory implements NativeScriptFactory {
+    public static class Factory extends AbstractComponent implements
+            NativeScriptFactory {
+
+        private final Node node;
+
+        private final Cache<Tuple<String, String>, Map<String, Object>> cache;
+
+        /**
+         * This constructor will be called by guice during initialization
+         * 
+         * @param node
+         *            injecting the reference to current node to get access to
+         *            node's client
+         */
+        @Inject
+        public Factory(Node node, Settings settings) {
+            super(settings);
+            // Node is not fully initialized here
+            // All we can do is save a reference to it for future use
+            this.node = node;
+
+            TimeValue expire = settings.getAsTime("expire", null);
+            CacheBuilder cacheBuilder = CacheBuilder.newBuilder();
+            if (expire != null) {
+                cacheBuilder.expireAfterAccess(expire.seconds(),
+                        TimeUnit.SECONDS);
+            } else {
+                // Default expiration is 1 hour
+                cacheBuilder.expireAfterAccess(1L, TimeUnit.HOURS);
+            }
+            cache = cacheBuilder.build();
+        }
 
         /**
          * This method is called for every search on every shard.
@@ -63,15 +106,31 @@ public class EntityResolutionScript extends AbstractSearchScript {
     }
 
     private EntityResolutionScript(Map<String, Object> params) {
-        HashMap<String, Collection<String>> props = new HashMap<String, Collection<String>>();
-        ArrayList<Map<String, Object>> fieldsParams = null;
 
         if (params.get("fields") == null)
             throw new ElasticSearchIllegalArgumentException(
                     "Missing the 'fields' parameters");
-        else
-            fieldsParams = (ArrayList<Map<String, Object>>) params
-                    .get("fields");
+
+        if (params.get("configuration") == null) {
+            comparedRecord = configureWithFieldsOnly((ArrayList<Map<String, Object>>) params
+                    .get("fields"));
+        } else {
+            comparedRecord = configureWithFieldsAndConfiguration((Map<String, Object>) params
+                    .get("entity"));
+        }
+
+    }
+
+    private Record configureWithFieldsAndConfiguration(
+            Map<String, Object> params) {
+        // TODO : implement configuration
+        return null;
+    }
+
+    private Record configureWithFieldsOnly(
+            ArrayList<Map<String, Object>> fieldsParams) {
+
+        HashMap<String, Collection<String>> props = new HashMap<String, Collection<String>>();
 
         Iterator<Map<String, Object>> it = fieldsParams.iterator();
         while (it.hasNext()) {
@@ -88,7 +147,8 @@ public class EntityResolutionScript extends AbstractSearchScript {
             while (cleanIt.hasNext()) {
                 String cleanerName = (String) cleanIt.next();
 
-                Cleaner cleaner = (Cleaner) ObjectUtils.instantiate(cleanerName);
+                Cleaner cleaner = (Cleaner) ObjectUtils
+                        .instantiate(cleanerName);
                 cleanList.add(cleaner);
                 fieldValue = cleaner.clean(fieldValue);
             }
@@ -105,15 +165,15 @@ public class EntityResolutionScript extends AbstractSearchScript {
             String comparatorName = (value.get("comparator") == null ? Levenshtein.class
                     .getName() : (String) value.get("comparator"));
 
-            Comparator comp = (Comparator) ObjectUtils.instantiate(comparatorName);
+            Comparator comp = (Comparator) ObjectUtils
+                    .instantiate(comparatorName);
             map.put("high", maxValue);
             map.put("low", minValue);
             map.put("comparator", comp);
 
             entityParams.put(fieldValue, map);
         }
-
-        comparedRecord = new RecordImpl(props);
+        return new RecordImpl(props);
     }
 
     @Override
