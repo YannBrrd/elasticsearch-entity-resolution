@@ -20,12 +20,6 @@ $ plugin -i entity-resolution -url http://dl.bintray.com/yann-barraud/elasticsea
 ```
 
 ## Request
-
-### Tuning mode 
-
-This mode allows you to parametrize the plugin for each request you fire. It is comfortable to tune your comparison parameters. Once tuning is done, you can switch (if you wish) to indus-mode.
-
-#### Request
  ```javascript
 {
   "query": {
@@ -66,125 +60,6 @@ This mode allows you to parametrize the plugin for each request you fire. It is 
               "comparator": "no.priv.garshol.duke.comparators.NumericComparator",
               "low": 0.1,
               "high": 0.95
-            }
-          ]
-        }
-      }
-    }
-  }
-}
-```
-
-### indus-mode
-
-Once you are certain of your script parametrization, it is quite comfortable to store it in Elasticsearch.
-
-#### Parametrization store exemple
-
-##### Mapping 
-```javascript
-{
-  "settings": {
-    "index.number_of_shards": 1,
-    "index.number_of_replicas": 0
-  },
-  "mappings": {
-    "entity-configuration": {
-      "properties": {
-        "name": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "comparator": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "low": {
-          "type": "double"
-        },
-        "high": {
-          "type": "double"
-        },
-        "cleaners": {
-            "type": "string",
-            "index" : "not_analyzed"
-        }
-      }
-    }
-  }
-}
-```
-
-##### Parameters
-```javascript
-{
-  "entity": {
-    "fields": [
-      {
-        "field": "city",
-        "cleaners": [
-          "no.priv.garshol.duke.cleaners.TrimCleaner",
-          "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
-        ],
-        "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
-        "low": 0.1,
-        "high": 0.95
-      },
-      {
-        "field": "state",
-        "cleaners": [
-          "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
-        ],
-        "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
-        "low": 0.1,
-        "high": 0.95
-      },
-      {
-        "field": "population",
-        "cleaners": [
-          "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
-        ],
-        "comparator": "no.priv.garshol.duke.comparators.NumericComparator",
-        "low": 0.1,
-        "high": 0.95
-      }
-    ]
-  }
-}
-```
-
-##### Request
-```javascript
-{
-  "size": 4,
-  "query": {
-    "custom_score": {
-      "query": {
-        "match_all": {
-          
-        }
-      },
-      "script": "entity-resolution",
-      "lang": "native",
-      "params": {
-        "entity": {
-          "configuration": {
-            "index": "entity",
-            "type": "entity-configuration",
-            "name": "test"
-          },
-          "fields": [
-            {
-              "field": "city",
-              "value": "South"
-            },
-            {
-              "field": "state",
-              "value": "ME"
-            },
-            {
-              "field": "population",
-              "value": "26000"
             }
           ]
         }
