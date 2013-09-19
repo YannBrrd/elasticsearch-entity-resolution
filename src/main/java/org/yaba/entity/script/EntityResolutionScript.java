@@ -315,7 +315,11 @@ public class EntityResolutionScript extends AbstractSearchScript {
 		    while (clIt.hasNext()) {
 			Cleaner cl = clIt.next();
 			v1 = cl.clean(v1);
+			if (v1 == null)
+			    v1 = "";
 			v2 = cl.clean(v2);
+			if (v2 == null)
+			    v2 = "";
 		    }
 
 		    double p = compare(v1, v2, max, min, comp);
