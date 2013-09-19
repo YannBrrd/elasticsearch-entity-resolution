@@ -143,8 +143,6 @@ public class EntityResolutionScript extends AbstractSearchScript {
 		if (confFields == null)
 		    throw new ElasticSearchIllegalArgumentException("Bad conf found in " + configIndex + "/" + configType + "/" + configName);
 
-		System.out.println("Config : " + confFields);
-
 		Iterator<Map<String, Object>> it = confFields.iterator();
 
 		while (it.hasNext()) {
@@ -152,13 +150,11 @@ public class EntityResolutionScript extends AbstractSearchScript {
 		    Map<String, Object> value = it.next();
 
 		    String field = (String) value.get("field");
-		    System.out.println("Field : " + field);
 		    Iterator<String> cleanIt = ((ArrayList<String>) value.get("cleaners")).iterator();
 		    ArrayList<Cleaner> cleanList = new ArrayList<Cleaner>();
 
 		    while (cleanIt.hasNext()) {
 			String cleanerName = (String) cleanIt.next();
-			System.out.println("Cleaner : " + cleanerName);
 
 			Cleaner cleaner = (Cleaner) ObjectUtils.instantiate(cleanerName);
 			cleanList.add(cleaner);
@@ -176,20 +172,10 @@ public class EntityResolutionScript extends AbstractSearchScript {
 		    map.put("low", minValue);
 		    map.put("comparator", comp);
 
-		    System.out.println("High : " + maxValue);
-		    System.out.println("Low : " + minValue);
-		    System.out.println("Comparator : " + comparatorName);
-
-		    System.out.println("Map : " + map);
-
 		    entityParams.put(field, map);
 		}
-
-		System.out.println("Entity Params : " + entityParams);
-
 		cache.put(configIndex + "." + configType + "." + configName, entityParams);
 	    }
-
 	}
 
 	HashMap<String, Collection<String>> props = new HashMap<String, Collection<String>>();
@@ -266,14 +252,12 @@ public class EntityResolutionScript extends AbstractSearchScript {
 	while (it.hasNext()) {
 	    String key = (String) it.next();
 
-	    if (doc.get(key) != null) {
+	    if (doc.containsKey(key)) {
 		String value = getFieldValue(doc.get(key));
 		props2.put(key, value == null ? Collections.singleton("") : Collections.singleton(value));
 	    }
 	}
-
 	Record r2 = new RecordImpl(props2);
-
 	return new Double(compare(comparedRecord, r2, entityParams)).floatValue();
     }
 
@@ -284,7 +268,6 @@ public class EntityResolutionScript extends AbstractSearchScript {
      * @return String
      */
     private String getFieldValue(Object field) {
-
 	String result = "";
 
 	if (field instanceof ScriptDocValues.Strings)
@@ -306,12 +289,7 @@ public class EntityResolutionScript extends AbstractSearchScript {
     private double compare(Record r1, Record r2, HashMap<String, HashMap<String, Object>> params) {
 	double prob = 0.5;
 
-	System.out.println("Comparing " + r1 + " " + r2 + " params : " + params);
-	System.out.println("Properties " + r1.getProperties());
-
 	for (String propname : r1.getProperties()) {
-	    System.out.println("Propname " + propname);
-
 	    Collection<String> vs1 = r1.getValues(propname);
 	    Collection<String> vs2 = r2.getValues(propname);
 
@@ -331,26 +309,14 @@ public class EntityResolutionScript extends AbstractSearchScript {
 			continue;
 
 		    Comparator comp = (Comparator) params.get(propname).get("comparator");
-
 		    ArrayList<Cleaner> cleanersList = (ArrayList<Cleaner>) params.get(propname).get("cleaners");
-
 		    Iterator<Cleaner> clIt = cleanersList.iterator();
-
-		    System.out.println("V1 : " + v1);
-		    System.out.println("V2 : " + v2);
 
 		    while (clIt.hasNext()) {
 			Cleaner cl = clIt.next();
-			System.out.println("cl : " + cl);
-
 			v1 = cl.clean(v1);
 			v2 = cl.clean(v2);
-			System.out.println("V1 : " + v1);
-			System.out.println("V2 : " + v2);
-
 		    }
-
-		    System.out.println("Comparing " + v1 + " " + v2 + " max : " + max + " min : " + min + " using : " + comp);
 
 		    double p = compare(v1, v2, max, min, comp);
 		    high = Math.max(high, p);
