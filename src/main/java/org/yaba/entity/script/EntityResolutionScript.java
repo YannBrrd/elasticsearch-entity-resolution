@@ -121,7 +121,7 @@ public final class EntityResolutionScript extends AbstractSearchScript {
                             new TimeValue(1L, TimeUnit.HOURS));
             ByteSizeValue size =
                     settings.getAsBytesSize(
-                            "examples.nativescript.lookup.size", null);
+                            "entity-resolution.cache.size", null);
             CacheBuilder<Object, Object> cacheBuilder =
                     CacheBuilder.newBuilder();
             cacheBuilder.expireAfterAccess(expire.seconds(), TimeUnit.SECONDS);
