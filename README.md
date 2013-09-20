@@ -23,7 +23,7 @@ $ plugin -i entity-resolution -url http://dl.bintray.com/yann-barraud/elasticsea
 
 ### Tuning mode 
 
-This mode allows you to parametrize the plugin for each request you fire. It is comfortable to tune your comparison parameters. Once tuning is done, you can switch (if you wish) to indus-mode.
+This mode allows you to parametrise the plugin for each request you fire. It is comfortable to tune your comparison parameters. Once tuning is done, you can switch (if you wish) to indus-mode.
 
 #### Request
  ```javascript
@@ -194,10 +194,10 @@ Once you are certain of your script parametrization, it is quite comfortable to 
 }
 ```
 
-## Parametrization
+## Parametrisation
 ### fields
 
-List of fields to compare, and parametrization. Should always be an array.
+List of fields to compare, and parametrisation. Should always be an array.
 * ```field``` is the name of the field to compare to.
 * ```value``` is the value of the field to compare.
 * ```cleaners``` is the list of data cleaners to apply. Should always be an array. Should always be full qualified class name.
@@ -205,9 +205,14 @@ List of fields to compare, and parametrization. Should always be an array.
 * ```low``` is the lowest probability for this field (if the probability is inferior, this one will be used).
 * ```high``` is the highest probability for this field (if the probability is superior, this one will be used).
 
-## Run example
+### Threshold
+Threshold can be set using ```min_score``` as described in [Elasticsearch documentation](http://www.elasticsearch.org/guide/reference/api/search/min-score/).
 
-### Request
+## Run examples
+
+### Without threshold
+
+#### Request
 
 ```javascript
 {
@@ -261,7 +266,7 @@ List of fields to compare, and parametrization. Should always be an array.
 }
 ```
 
-### Response
+#### Response
 
 ```javascript
 {
@@ -299,6 +304,76 @@ List of fields to compare, and parametrization. Should always be an array.
   }
 }
 ```
+
+#### With threshold && using stored configuration
+
+#### Request
+
+```javascript
+{
+  "size": 4,
+  "min_score" : 0.7,
+  "query": {
+    "custom_score": {
+      "query": {
+        "match_all": {
+          
+        }
+      },
+      "script": "entity-resolution",
+      "lang": "native",
+      "params": {
+        "entity": {
+          "configuration": {
+            "index": "entity",
+            "type": "entity-configuration",
+            "name": "test"
+          },
+          "fields": [
+            {
+              "field": "city",
+              "value": "South"
+            },
+            {
+              "field": "state",
+              "value": "ME"
+            },
+            {
+              "field": "population",
+              "value": "26000"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+#### Response
+```javascript
+{
+  "took" : 2,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 1,
+    "max_score" : 0.95843065,
+    "hits" : [ {
+      "_index" : "test",
+      "_type" : "city",
+      "_id" : "3",
+      "_score" : 0.95843065, "_source" : {"city":"South Portland","state":"ME","population":25002}
+    } ]
+  }
+}
+```
+
+
 ## Licence 
 
 This project is licended under LGPLv3

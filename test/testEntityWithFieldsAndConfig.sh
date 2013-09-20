@@ -66,8 +66,9 @@ curl -XPUT "localhost:9200/entity/entity-configuration/test" -d '{
   }
 }'
 echo
-curl -s "localhost:9200/test/_search?pretty=true" -d '{
+curl -s "localhost:9200/test/city/_search?pretty=true" -d '{
   "size": 4,
+  "min_score" : 0.7,
   "query": {
     "custom_score": {
       "query": {
