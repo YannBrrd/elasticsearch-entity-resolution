@@ -16,7 +16,7 @@ A list of [available comparators] (http://code.google.com/p/duke/wiki/Comparator
 Download at [Bintray](http://dl.bintray.com/yann-barraud/elasticsearch-entity-resolution)
 
 ``` 
-$ plugin -i entity-resolution -url http://dl.bintray.com/yann-barraud/elasticsearch-entity-resolution/org/yaba/elasticsearch-identity-resolution-plugin/0.2/elasticsearch-identity-resolution-plugin-0.2p
+$ plugin -i entity-resolution -url plugin -i entity-resolution -url http://dl.bintray.com/yann-barraud/elasticsearch-entity-resolution#elasticsearch-entity-resolution-plugin-0.2.zip
 ```
 
 ## Request
