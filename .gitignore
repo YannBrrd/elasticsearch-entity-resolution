@@ -3,4 +3,6 @@ target/
 .classpath
 .settings
 .checkstyle
+.idea
 data/
+*.iml

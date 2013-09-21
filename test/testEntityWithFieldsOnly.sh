@@ -3,10 +3,11 @@ echo
 curl -s "localhost:9200/test/city/_search?pretty=true" -d '{
   "size": 4,
   "query": {
-    "custom_score": {
+    "function_score": {
       "query": {
         "match_all": {}
       },
+      "script_score" :{
       "script": "entity-resolution",
       "lang": "native",
       "params": {
@@ -47,6 +48,6 @@ curl -s "localhost:9200/test/city/_search?pretty=true" -d '{
         }
       }
     }
-  }
+  }                           }
 }'
 

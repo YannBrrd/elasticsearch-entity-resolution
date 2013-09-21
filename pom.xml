@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.yaba</groupId>
 	<artifactId>elasticsearch-entity-resolution-plugin</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<description>ElasticSearch Plugin for Entity Resolution</description>
 	<inceptionYear>2013</inceptionYear>
@@ -35,7 +35,7 @@
 	<!-- ============================================================= -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<elasticsearch.version>0.90.3</elasticsearch.version>
+		<elasticsearch.version>0.90.5</elasticsearch.version>
 	</properties>
 
 	<!-- ============================================================= -->
@@ -144,27 +144,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-					</execution>
-				</executions>			
-				<configuration>				
-					<executable>curl</executable>
-					<arguments>
-						<argument>-XDELETE</argument>
-						<argument>-u</argument>
-						<argument>${env.CI_DEPLOY_USERNAME}:${env.CI_DEPLOY_PASSWORD}</argument>
-						<argument>https://api.bintray.com/content/yann-barraud/elasticsearch-entity-resolution/elasticsearch-entity-resolution/${project.version}</argument>
-					</arguments>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
