@@ -21,7 +21,7 @@ import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.fielddata.ScriptDocValues;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.script.AbstractSearchScript;
+import org.elasticsearch.script.AbstractDoubleSearchScript;
 import org.elasticsearch.script.ExecutableScript;
 import org.elasticsearch.script.NativeScriptFactory;
 import org.elasticsearch.search.lookup.DocLookup;
@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * @author Yann Barraud
  *
  */
-public final class EntityResolutionScript extends AbstractSearchScript {
+public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     /**
      * . Average score
      */
@@ -180,7 +180,6 @@ public final class EntityResolutionScript extends AbstractSearchScript {
             }
 
             double high = 0.0;
-            v1fieldloop:
             for (String v1 : vs1) {
                 if (v1.equals(""))
                     continue;
@@ -191,9 +190,6 @@ public final class EntityResolutionScript extends AbstractSearchScript {
                         continue;
 
                     for (Cleaner cl : cleanersList) {
-                        v1 = cl.clean(v1);
-                        if ((v1 == null) || v1.equals(""))
-                            continue v1fieldloop;
                         v2 = cl.clean(v2);
                         if ((v2 == null) || v2.equals(""))
                             continue v2fieldloop;
@@ -320,12 +316,18 @@ public final class EntityResolutionScript extends AbstractSearchScript {
         HashMap<String, Collection<String>> props =
                 new HashMap<String, Collection<String>>();
 
+        readFields(fields, props);
+        return new RecordImpl(props);
+    }
+
+    private void readFields(ArrayList<Map<String, Object>> fields, HashMap<String, Collection<String>> props) {
         for (Map<String, Object> value : fields) {
             String field = (String) value.get("field");
             String fieldValue = (String) value.get("value");
+            for (Cleaner cl : (ArrayList<Cleaner>) entityParams.get(field).get("cleaners"))
+                fieldValue = cl.clean(fieldValue);
             props.put(field, Collections.singleton(fieldValue));
         }
-        return new RecordImpl(props);
     }
 
     /**
@@ -345,14 +347,11 @@ public final class EntityResolutionScript extends AbstractSearchScript {
             HashMap<String, Object> map = new HashMap<String, Object>();
 
             String field = (String) value.get("field");
-            String fieldValue = (String) value.get("value");
 
             ArrayList<Cleaner> cleanList =
                     getCleaners((ArrayList<String>) value.get("cleaners"));
 
             map.put("cleaners", cleanList);
-
-            props.put(field, Collections.singleton(fieldValue));
 
             Double maxValue = 0.0;
             if (value.get("high") != null) {
@@ -371,6 +370,8 @@ public final class EntityResolutionScript extends AbstractSearchScript {
 
             entityParams.put(field, map);
         }
+
+        readFields(fieldsParams, props);
         return new RecordImpl(props);
     }
 
@@ -380,7 +381,7 @@ public final class EntityResolutionScript extends AbstractSearchScript {
      * @return float the computed score
      */
     @Override
-    public float runAsFloat() {
+    public double runAsDouble() {
         HashMap<String, Collection<String>> props =
                 new HashMap<String, Collection<String>>();
         DocLookup doc = doc();
@@ -394,13 +395,7 @@ public final class EntityResolutionScript extends AbstractSearchScript {
                         : Collections.singleton(value));
             }
         Record r2 = new RecordImpl(props);
-        return new Double(compare(comparedRecord, r2, entityParams))
-                .floatValue();
-    }
-
-    @Override
-    public Object run() {
-        return runAsFloat();
+        return compare(comparedRecord, r2, entityParams);
     }
 
     /**
