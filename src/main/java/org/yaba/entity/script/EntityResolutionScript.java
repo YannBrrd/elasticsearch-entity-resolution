@@ -39,6 +39,11 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public final class EntityResolutionScript extends AbstractDoubleSearchScript {
+    private static final String FIELDS = "fields";
+    private static final String COMPARATOR = "comparator";
+    private static final String CLEANERS = "cleaners";
+    private static final String HIGH = "high";
+    private static final String LOW = "low";
     /**
      * . Average score
      */
@@ -72,9 +77,10 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             final Cache<String, HashMap<String, HashMap<String, Object>>> aCache,
             final Client aClient) {
 
-        if (params.get("fields") == null)
+        if (params.get(FIELDS) == null) {
             throw new ElasticSearchIllegalArgumentException(
                     "Missing the 'fields' parameters");
+        }
 
         this.cache = aCache;
         this.client = aClient;
@@ -83,7 +89,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         if (params.get("configuration") == null) {
             comparedRecord =
                     configureWithFieldsOnly((ArrayList<Map<String, Object>>) params
-                            .get("fields"));
+                            .get(FIELDS));
         } else {
             comparedRecord =
                     configureWithFieldsAndConfiguration(
@@ -100,9 +106,9 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
      * @param arrayList array of cleaners from JSON
      * @return the list of instantiated cleaners
      */
-    private static ArrayList<Cleaner> getCleaners(
-            final ArrayList<String> arrayList) {
-        ArrayList<Cleaner> cleanList = new ArrayList<Cleaner>();
+    private static List<Cleaner> getCleaners(
+            final List<String> arrayList) {
+        List<Cleaner> cleanList = new ArrayList<Cleaner>();
 
         for (String cleanerName : arrayList) {
             Cleaner cleaner = (Cleaner) ObjectUtils.instantiate(cleanerName);
@@ -117,9 +123,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
      */
     private static Comparator getComparator(final Map<String, Object> value) {
         String comparatorName =
-                (value.get("comparator") == null
-                        ? Levenshtein.class.getName()
-                        : (String) value.get("comparator"));
+                ((value.get(COMPARATOR) == null) ? Levenshtein.class.getName() : (String) value.get(COMPARATOR));
 
         return (Comparator) ObjectUtils.instantiate(comparatorName);
     }
@@ -133,17 +137,21 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     private static String getFieldValue(final Object field) {
         String result = "";
 
-        if (field instanceof ScriptDocValues.Strings)
+        if (field instanceof ScriptDocValues.Strings) {
             result = ((ScriptDocValues.Strings) field).getValue();
-        if (field instanceof ScriptDocValues.Doubles)
+        }
+        if (field instanceof ScriptDocValues.Doubles) {
             result =
                     Double.toString(((ScriptDocValues.Doubles) field)
                             .getValue());
-        if (field instanceof ScriptDocValues.Longs)
+        }
+        if (field instanceof ScriptDocValues.Longs) {
             result = Long.toString(((ScriptDocValues.Longs) field).getValue());
-        if (field instanceof ScriptDocValues.GeoPoints)
+        }
+        if (field instanceof ScriptDocValues.GeoPoints) {
             throw new ElasticSearchException(
                     "No comparator implemented for GeoPoints");
+        }
 
         return result;
     }
@@ -151,6 +159,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     /**
      * Compares two records and returns the probability that they represent the
      * same real-world entity.
+     *
      *
      * @param r1     1st Record
      * @param r2     2nd Record
@@ -168,12 +177,12 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             Collection<String> vs2 = r2.getValues(propname);
 
             Comparator comp =
-                    (Comparator) params.get(propname).get("comparator");
+                    (Comparator) params.get(propname).get(COMPARATOR);
             ArrayList<Cleaner> cleanersList =
-                    (ArrayList<Cleaner>) params.get(propname).get("cleaners");
+                    (ArrayList<Cleaner>) params.get(propname).get(CLEANERS);
 
-            Double max = (Double) params.get(propname).get("high");
-            Double min = (Double) params.get(propname).get("low");
+            Double max = (Double) params.get(propname).get(HIGH);
+            Double min = (Double) params.get(propname).get(LOW);
 
             if (vs1 == null || vs1.isEmpty() || vs2 == null || vs2.isEmpty()) {
                 continue; // no values to compare, so skip
@@ -181,18 +190,21 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
 
             double high = 0.0;
             for (String v1 : vs1) {
-                if (v1.equals(""))
+                if (v1.equals("")) {
                     continue;
+                }
 
                 v2fieldloop:
                 for (String v2 : vs2) {
-                    if (v2.equals(""))
+                    if (v2.equals("")) {
                         continue;
+                    }
 
                     for (Cleaner cl : cleanersList) {
                         v2 = cl.clean(v2);
-                        if ((v2 == null) || v2.equals(""))
+                        if ((v2 == null) || v2.equals("")) {
                             continue v2fieldloop;
+                        }
                     }
                     double p = compare(v1, v2, max, min, comp);
                     high = Math.max(high, p);
@@ -221,14 +233,16 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             final double low,
             final Comparator comparator) {
 
-        if (comparator == null)
+        if (comparator == null) {
             return AVERAGE_SCORE; // we ignore properties with no comparator
+        }
 
         double sim = comparator.compare(v1, v2);
-        if (sim >= AVERAGE_SCORE)
-            return ((high - AVERAGE_SCORE) * (sim * sim)) + AVERAGE_SCORE;
-        else
+        if (sim < AVERAGE_SCORE) {
             return low;
+        } else {
+            return ((high - AVERAGE_SCORE) * (sim * sim)) + AVERAGE_SCORE;
+        }
     }
 
     /**
@@ -240,7 +254,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
      */
     private Record configureWithFieldsAndConfiguration(
             final Map<String, Object> configuration,
-            final ArrayList<Map<String, Object>> fields) {
+            final List<Map<String, Object>> fields) {
 
         /*
       . Index name where to get configuration
@@ -256,7 +270,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         String configName = (String) configuration.get("name");
 
         entityParams =
-                cache.getIfPresent(configIndex + "." + configType + "."
+                 cache.getIfPresent(configIndex + "." + configType + "."
                         + configName);
 
         if (entityParams == null) {
@@ -289,22 +303,26 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                     HashMap<String, Object> map = new HashMap<String, Object>();
 
                     String field = (String) confField.get("field");
-                    ArrayList<Cleaner> cleanList =
+                    List<Cleaner> cleanList =
                             getCleaners((ArrayList<String>) confField
-                                    .get("cleaners"));
+                                    .get(CLEANERS));
 
-                    map.put("cleaners", cleanList);
+                    map.put(CLEANERS, cleanList);
 
                     Double maxValue = 0.0;
-                    if (confField.get("high") != null) maxValue = ((Double) confField.get("high"));
+                    if (confField.get(HIGH) != null) {
+                        maxValue = ((Double) confField.get(HIGH));
+                    }
 
                     Double minValue = 0.0;
-                    if (confField.get("low") != null) minValue = (Double) confField.get("low");
+                    if (confField.get(LOW) != null) {
+                        minValue = (Double) confField.get(LOW);
+                    }
 
                     Comparator comp = getComparator(confField);
-                    map.put("high", maxValue);
-                    map.put("low", minValue);
-                    map.put("comparator", comp);
+                    map.put(HIGH, maxValue);
+                    map.put(LOW, minValue);
+                    map.put(COMPARATOR, comp);
 
                     entityParams.put(field, map);
                 }
@@ -320,12 +338,13 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         return new RecordImpl(props);
     }
 
-    private void readFields(ArrayList<Map<String, Object>> fields, HashMap<String, Collection<String>> props) {
+    private void readFields(List<Map<String, Object>> fields, Map<String, Collection<String>> props) {
         for (Map<String, Object> value : fields) {
             String field = (String) value.get("field");
             String fieldValue = (String) value.get("value");
-            for (Cleaner cl : (ArrayList<Cleaner>) entityParams.get(field).get("cleaners"))
+            for (Cleaner cl : (ArrayList<Cleaner>) entityParams.get(field).get(CLEANERS)) {
                 fieldValue = cl.clean(fieldValue);
+            }
             props.put(field, Collections.singleton(fieldValue));
         }
     }
@@ -337,9 +356,9 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
      * @return the record for comparison
      */
     private Record configureWithFieldsOnly(
-            final ArrayList<Map<String, Object>> fieldsParams) {
+            final List<Map<String, Object>> fieldsParams) {
 
-        HashMap<String, Collection<String>> props =
+        Map<String, Collection<String>> props =
                 new HashMap<String, Collection<String>>();
         entityParams = new HashMap<String, HashMap<String, Object>>();
 
@@ -348,25 +367,25 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
 
             String field = (String) value.get("field");
 
-            ArrayList<Cleaner> cleanList =
-                    getCleaners((ArrayList<String>) value.get("cleaners"));
+            List<Cleaner> cleanList =
+                    getCleaners((ArrayList<String>) value.get(CLEANERS));
 
-            map.put("cleaners", cleanList);
+            map.put(CLEANERS, cleanList);
 
             Double maxValue = 0.0;
-            if (value.get("high") != null) {
-                maxValue = (Double) value.get("high");
+            if (value.get(HIGH) != null) {
+                maxValue = (Double) value.get(HIGH);
             }
 
             Double minValue = 0.0;
-            if (value.get("low") != null) {
-                minValue = (Double) value.get("low");
+            if (value.get(LOW) != null) {
+                minValue = (Double) value.get(LOW);
             }
 
             Comparator comp = getComparator(value);
-            map.put("high", maxValue);
-            map.put("low", minValue);
-            map.put("comparator", comp);
+            map.put(HIGH, maxValue);
+            map.put(LOW, minValue);
+            map.put(COMPARATOR, comp);
 
             entityParams.put(field, map);
         }
@@ -387,13 +406,14 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         DocLookup doc = doc();
         Collection<String> docKeys = comparedRecord.getProperties();
 
-        for (String key : docKeys)
+        for (String key : docKeys) {
             if (doc.containsKey(key)) {
                 String value = getFieldValue(doc.get(key));
                 props.put(key, value == null
                         ? Collections.singleton("")
                         : Collections.singleton(value));
             }
+        }
         Record r2 = new RecordImpl(props);
         return compare(comparedRecord, r2, entityParams);
     }
@@ -452,7 +472,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
          * @return new native script
          */
         @Override
-        public ExecutableScript newScript(
+        public final ExecutableScript newScript(
                 @Nullable final Map<String, Object> params) {
             if (params.get("entity") == null) {
                 throw new ElasticSearchIllegalArgumentException(
@@ -460,7 +480,8 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             }
 
             return new EntityResolutionScript(
-                    (Map<String, Object>) params.get("entity"), cache,
+                    (Map<String, Object>) params.get("entity"),
+                    cache,
                     node.client());
         }
 

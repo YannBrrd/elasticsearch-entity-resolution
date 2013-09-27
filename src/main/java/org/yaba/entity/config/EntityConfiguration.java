@@ -1,23 +1,21 @@
 package org.yaba.entity.config;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class EntityConfiguration {
 
-    private HashMap<String, Object> parameters = null;
+    private Map<String, Object> parameters = null;
 
-    public EntityConfiguration(ArrayList<Map<String, Object>> params) {
+    public EntityConfiguration(List<Map<String, Object>> params) {
         Iterator<Map<String, Object>> it = params.iterator();
 
         parameters = new HashMap<String, Object>();
 
         while (it.hasNext()) {
             Map<String, Object> map = it.next();
-            if (!(map.get("field") == null))
+            if (!(map.get("field") == null)) {
                 parameters.put((String) map.get("field"), map);
+            }
             /*
              * Set<String> mapKeys = map.keySet(); Iterator<String> mapIt =
              * mapKeys.iterator(); while (mapIt.hasNext()) { String key =
@@ -28,7 +26,7 @@ public class EntityConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    public HashMap<String, Object> getConfiguratio(String key) {
-        return (HashMap<String, Object>) parameters.get(key);
+    public final Map<String, Object> getConfiguratio(String key) {
+        return (Map<String, Object>) parameters.get(key);
     }
 }
