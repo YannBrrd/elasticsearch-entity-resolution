@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.yaba</groupId>
 	<artifactId>elasticsearch-entity-resolution-plugin</artifactId>
-	<version>0.3-SNAPSHOT</version>
+	<version>0.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<description>ElasticSearch Plugin for Entity Resolution</description>
 	<inceptionYear>2013</inceptionYear>
