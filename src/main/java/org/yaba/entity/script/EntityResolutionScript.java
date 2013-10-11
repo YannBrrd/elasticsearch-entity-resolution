@@ -7,7 +7,6 @@ import no.priv.garshol.duke.RecordImpl;
 import no.priv.garshol.duke.comparators.Levenshtein;
 import no.priv.garshol.duke.utils.ObjectUtils;
 import no.priv.garshol.duke.utils.Utils;
-import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.ElasticSearchIllegalArgumentException;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
@@ -149,8 +148,8 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             result = Long.toString(((ScriptDocValues.Longs) field).getValue());
         }
         if (field instanceof ScriptDocValues.GeoPoints) {
-            throw new ElasticSearchException(
-                    "No comparator implemented for GeoPoints");
+            ScriptDocValues.GeoPoints point = (ScriptDocValues.GeoPoints) field;
+            result = String.format("%s,%s", point.getLat(), point.getLon());
         }
 
         return result;
@@ -159,7 +158,6 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     /**
      * Compares two records and returns the probability that they represent the
      * same real-world entity.
-     *
      *
      * @param r1     1st Record
      * @param r2     2nd Record
@@ -270,7 +268,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         String configName = (String) configuration.get("name");
 
         entityParams =
-                 cache.getIfPresent(configIndex + "." + configType + "."
+                cache.getIfPresent(configIndex + "." + configType + "."
                         + configName);
 
         if (entityParams == null) {
@@ -383,6 +381,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             }
 
             Comparator comp = getComparator(value);
+
             map.put(HIGH, maxValue);
             map.put(LOW, minValue);
             map.put(COMPARATOR, comp);

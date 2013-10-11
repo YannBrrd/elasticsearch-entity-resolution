@@ -28,46 +28,45 @@ This mode allows you to parametrise the plugin for each request you fire. It is 
 #### Request
  ```javascript
 {
-  "query": {
-    "custom_score": {
-      "query": {
-        "match_all": {}
+  "size" : 4,
+  "query" : {
+    "custom_score" : {
+      "query" : {
+        "match_all" : { }
       },
-      "script": "entity-resolution",
-      "lang": "native",
-      "params": {
-        "entity": {
-          "fields": [
-            {
-              "field": "city",
-              "value": "South",
-              "cleaners": [
-                "no.priv.garshol.duke.cleaners.TrimCleaner",
-                "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
-              ],
-              "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
-              "low": 0.1,
-              "high": 0.95
-            },
-            {
-              "field": "state",
-              "value": "ME",
-              "cleaners": [
-                "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
-              ],
-              "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
-              "low": 0.1,
-              "high": 0.95
-            },
-            {
-              "field": "population",
-              "value": "25002",
-              "cleaners": ["no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"],
-              "comparator": "no.priv.garshol.duke.comparators.NumericComparator",
-              "low": 0.1,
-              "high": 0.95
-            }
-          ]
+      "script" : "entity-resolution",
+      "lang" : "native",
+      "params" : {
+        "entity" : {
+          "fields" : [ {
+            "field" : "city",
+            "value" : "South",
+            "cleaners" : [ "no.priv.garshol.duke.cleaners.TrimCleaner", "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "high" : 0.95,
+            "comparator" : "no.priv.garshol.duke.comparators.JaroWinkler",
+            "low" : 0.1
+          }, {
+            "field" : "state",
+            "value" : "ME",
+            "cleaners" : [ "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "high" : 0.95,
+            "comparator" : "no.priv.garshol.duke.comparators.JaroWinkler",
+            "low" : 0.1
+          }, {
+            "field" : "population",
+            "value" : "26000",
+            "cleaners" : [ "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner" ],
+            "high" : 0.95,
+            "comparator" : "no.priv.garshol.duke.comparators.NumericComparator",
+            "low" : 0.1
+          }, {
+            "field" : "position",
+            "value" : "43,70",
+            "cleaners" : [ "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "high" : 0.95,
+            "comparator" : "no.priv.garshol.duke.comparators.GeopositionComparator",
+            "low" : 0.1
+          } ]
         }
       }
     }
@@ -126,7 +125,7 @@ Once you are certain of your script parametrization, it is quite comfortable to 
           "no.priv.garshol.duke.cleaners.TrimCleaner",
           "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
         ],
-        "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
+        "comparator": "no.priv.garshol.duke.comparators.JaroWinkler",
         "low": 0.1,
         "high": 0.95
       },
@@ -135,7 +134,7 @@ Once you are certain of your script parametrization, it is quite comfortable to 
         "cleaners": [
           "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
         ],
-        "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
+        "comparator": "no.priv.garshol.duke.comparators.JaroWinkler",
         "low": 0.1,
         "high": 0.95
       },
@@ -147,6 +146,14 @@ Once you are certain of your script parametrization, it is quite comfortable to 
         "comparator": "no.priv.garshol.duke.comparators.NumericComparator",
         "low": 0.1,
         "high": 0.95
+      },
+      {
+        "field" : "position",
+        "value" : "43,70",
+        "cleaners" : [ "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+        "high" : 0.95,
+        "comparator" : "no.priv.garshol.duke.comparators.GeopositionComparator",
+        "low" : 0.1
       }
     ]
   }
@@ -185,6 +192,10 @@ Once you are certain of your script parametrization, it is quite comfortable to 
             {
               "field": "population",
               "value": "26000"
+            },
+            {
+              "field": "position",
+              "value": "43,70"
             }
           ]
         }
@@ -216,49 +227,45 @@ Threshold can be set using ```min_score``` as described in [Elasticsearch docume
 
 ```javascript
 {
-  "size": 4,
-  "query": {
-    "custom_score": {
-      "query": {
-        "match_all": {}
+  "size" : 4,
+  "query" : {
+    "custom_score" : {
+      "query" : {
+        "match_all" : { }
       },
-      "script": "entity-resolution",
-      "lang": "native",
-      "params": {
-        "entity": {
-          "fields": [
-            {
-              "field": "city",
-              "value": "South",
-              "cleaners": [
-                "no.priv.garshol.duke.cleaners.TrimCleaner",
-                "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
-              ],
-              "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
-              "low": 0.1,
-              "high": 0.95
-            },
-            {
-              "field": "state",
-              "value": "ME",
-              "cleaners": [
-                "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
-              ],
-              "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
-              "low": 0.1,
-              "high": 0.95
-            },
-            {
-              "field": "population",
-              "value": "26000",
-              "cleaners": [
-                "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
-              ],
-              "comparator": "no.priv.garshol.duke.comparators.NumericComparator",
-              "low": 0.1,
-              "high": 0.95
-            }
-          ]
+      "script" : "entity-resolution",
+      "lang" : "native",
+      "params" : {
+        "entity" : {
+          "fields" : [ {
+            "field" : "city",
+            "value" : "South",
+            "cleaners" : [ "no.priv.garshol.duke.cleaners.TrimCleaner", "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "high" : 0.95,
+            "comparator" : "no.priv.garshol.duke.comparators.JaroWinkler",
+            "low" : 0.1
+          }, {
+            "field" : "state",
+            "value" : "ME",
+            "cleaners" : [ "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "high" : 0.95,
+            "comparator" : "no.priv.garshol.duke.comparators.JaroWinkler",
+            "low" : 0.1
+          }, {
+            "field" : "population",
+            "value" : "26000",
+            "cleaners" : [ "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner" ],
+            "high" : 0.95,
+            "comparator" : "no.priv.garshol.duke.comparators.NumericComparator",
+            "low" : 0.1
+          }, {
+            "field" : "position",
+            "value" : "43,70",
+            "cleaners" : [ "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "high" : 0.95,
+            "comparator" : "no.priv.garshol.duke.comparators.GeopositionComparator",
+            "low" : 0.1
+          } ]
         }
       }
     }
@@ -270,7 +277,7 @@ Threshold can be set using ```min_score``` as described in [Elasticsearch docume
 
 ```javascript
 {
-  "took" : 29,
+  "took" : 279,
   "timed_out" : false,
   "_shards" : {
     "total" : 1,
@@ -278,32 +285,31 @@ Threshold can be set using ```min_score``` as described in [Elasticsearch docume
     "failed" : 0
   },
   "hits" : {
-    "total" : 16,
-    "max_score" : 0.95843065,
+    "total" : 10,
+    "max_score" : 0.97579086,
     "hits" : [ {
       "_index" : "test",
       "_type" : "city",
       "_id" : "3",
-      "_score" : 0.95843065, "_source" : {"city": "South Portland", "state": "ME", "population": 25002}
+      "_score" : 0.97579086, "_source" : {"city":"South Portland","state":"ME","population":25002,"position":"43.631549,70.272724"}
     }, {
       "_index" : "test",
       "_type" : "city",
       "_id" : "5",
-      "_score" : 0.19, "_source" : {"city": "Portland", "state": "ME", "population": 66194}
+      "_score" : 0.29081574, "_source" : {"city":"Portland","state":"ME","population":66194,"position":"43.665116,70.269086"}
     }, {
       "_index" : "test",
       "_type" : "city",
-      "_id" : "4",
-      "_score" : 0.03672479, "_source" : {"city": "Essex", "state": "VT", "population": 19587}
+      "_id" : "10",
+      "_score" : 0.057230186, "_source" : {"city":"Boston","state":"MA","population":617594,"position":"42.321597,71.089115"}
     }, {
       "_index" : "test",
       "_type" : "city",
       "_id" : "2",
-      "_score" : 0.029812464, "_source" : {"city": "South Burlington", "state": "VT", "population": 17904}
+      "_score" : 0.049316783, "_source" : {"city":"South Burlington","state":"VT","population":17904,"position":"44.451846,73.181710"}
     } ]
   }
-}
-```
+}```
 
 #### With threshold && using stored configuration
 
@@ -341,6 +347,10 @@ Threshold can be set using ```min_score``` as described in [Elasticsearch docume
             {
               "field": "population",
               "value": "26000"
+            },
+            {
+              "field": "position",
+              "value": "43,70"
             }
           ]
         }

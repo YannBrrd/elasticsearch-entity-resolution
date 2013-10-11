@@ -9,6 +9,19 @@
 	<version>0.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<description>ElasticSearch Plugin for Entity Resolution</description>
+    <developers>
+        <developer>
+            <id>yann</id>
+            <name>Yann Barraud</name>
+            <email>yann.barraud@gmail.com</email>
+            <url>https://github.com/YannBrrd</url>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
 	<inceptionYear>2013</inceptionYear>
 	<licenses>
 		<license>
