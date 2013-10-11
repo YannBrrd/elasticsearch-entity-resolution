@@ -40,7 +40,7 @@ curl -XPUT "localhost:9200/entity/entity-configuration/test" -d '{
           "no.priv.garshol.duke.cleaners.TrimCleaner",
           "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
         ],
-        "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
+        "comparator": "no.priv.garshol.duke.comparators.JaroWinkler",
         "low": 0.1,
         "high": 0.95
       },
@@ -49,7 +49,7 @@ curl -XPUT "localhost:9200/entity/entity-configuration/test" -d '{
         "cleaners": [
           "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
         ],
-        "comparator": "no.priv.garshol.duke.comparators.Levenshtein",
+        "comparator": "no.priv.garshol.duke.comparators.JaroWinkler",
         "low": 0.1,
         "high": 0.95
       },
@@ -61,7 +61,16 @@ curl -XPUT "localhost:9200/entity/entity-configuration/test" -d '{
         "comparator": "no.priv.garshol.duke.comparators.NumericComparator",
         "low": 0.1,
         "high": 0.95
-      }
+      },
+      {
+        "field": "position",
+        "cleaners": [
+        "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+        ],
+        "comparator": "no.priv.garshol.duke.comparators.GeopositionComparator",
+        "low": 0.1,
+        "high": 0.95
+        }
     ]
   }
 }'
@@ -97,6 +106,10 @@ curl -s "localhost:9200/test/city/_search?pretty=true" -d '{
             {
               "field": "population",
               "value": "26000"
+            },
+            {
+              "field": "position",
+              "value": "43,70"
             }
           ]
         }

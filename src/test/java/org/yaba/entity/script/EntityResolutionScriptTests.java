@@ -36,23 +36,23 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
         String test_mapping =
                 XContentFactory.jsonBuilder()
                         .startObject()
-                            .startObject("city")
-                                .startObject("properties")
-                                    .startObject("city")
-                                        .field("type", "string")
-                                    .endObject()
-                                    .startObject("state")
-                                            .field("type", "string")
-                                            .field("index", "not_analyzed")
-                                    .endObject()
-                                    .startObject("population")
-                                        .field("type", "integer")
-                                    .endObject()
-                                    .startObject("position")
-                                        .field("type", "geo_point")
-                                    .endObject()
-                                .endObject()
-                            .endObject()
+                        .startObject("city")
+                        .startObject("properties")
+                        .startObject("city")
+                        .field("type", "string")
+                        .endObject()
+                        .startObject("state")
+                        .field("type", "string")
+                        .field("index", "not_analyzed")
+                        .endObject()
+                        .startObject("population")
+                        .field("type", "integer")
+                        .endObject()
+                        .startObject("position")
+                        .field("type", "geo_point")
+                        .endObject()
+                        .endObject()
+                        .endObject()
                         .endObject()
                         .string();
 
@@ -86,19 +86,19 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
         node.client()
                 .prepareIndex("test", "city", "7")
                 .setSource("city", "Stamford", "state", "CT", "population",
-                        122643,"position","41.074448,73.541316").execute().actionGet();
+                        122643, "position", "41.074448,73.541316").execute().actionGet();
         node.client()
                 .prepareIndex("test", "city", "8")
                 .setSource("city", "Colchester", "state", "VT", "population",
-                        17067,"position", "44.3231,73.148").execute().actionGet();
+                        17067, "position", "44.3231,73.148").execute().actionGet();
         node.client()
                 .prepareIndex("test", "city", "9")
                 .setSource("city", "Concord", "state", "NH", "population",
-                        42695,"position","43.220093,71.549127").execute().actionGet();
+                        42695, "position", "43.220093,71.549127").execute().actionGet();
         node.client()
                 .prepareIndex("test", "city", "10")
                 .setSource("city", "Boston", "state", "MA", "population",
-                        617594,"position", "42.321597,71.089115").execute().actionGet();
+                        617594, "position", "42.321597,71.089115").execute().actionGet();
 
         node.client().admin().indices().prepareRefresh("test").execute()
                 .actionGet();

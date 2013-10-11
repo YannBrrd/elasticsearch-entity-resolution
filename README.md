@@ -149,7 +149,6 @@ Once you are certain of your script parametrization, it is quite comfortable to 
       },
       {
         "field" : "position",
-        "value" : "43,70",
         "cleaners" : [ "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
         "high" : 0.95,
         "comparator" : "no.priv.garshol.duke.comparators.GeopositionComparator",
@@ -309,7 +308,8 @@ Threshold can be set using ```min_score``` as described in [Elasticsearch docume
       "_score" : 0.049316783, "_source" : {"city":"South Burlington","state":"VT","population":17904,"position":"44.451846,73.181710"}
     } ]
   }
-}```
+}
+```
 
 #### With threshold && using stored configuration
 
@@ -322,9 +322,7 @@ Threshold can be set using ```min_score``` as described in [Elasticsearch docume
   "query": {
     "custom_score": {
       "query": {
-        "match_all": {
-          
-        }
+        "match_all": {}
       },
       "script": "entity-resolution",
       "lang": "native",
@@ -363,21 +361,21 @@ Threshold can be set using ```min_score``` as described in [Elasticsearch docume
 #### Response
 ```javascript
 {
-  "took" : 2,
+  "took" : 8,
   "timed_out" : false,
   "_shards" : {
-    "total" : 5,
-    "successful" : 5,
+    "total" : 1,
+    "successful" : 1,
     "failed" : 0
   },
   "hits" : {
     "total" : 1,
-    "max_score" : 0.95843065,
+    "max_score" : 0.7192429,
     "hits" : [ {
       "_index" : "test",
       "_type" : "city",
       "_id" : "3",
-      "_score" : 0.95843065, "_source" : {"city":"South Portland","state":"ME","population":25002}
+      "_score" : 0.7192429, "_source" : {"city": "South Portland", "state": "ME", "population": 25002, "position": "43.631549,70.272724"}
     } ]
   }
 }
