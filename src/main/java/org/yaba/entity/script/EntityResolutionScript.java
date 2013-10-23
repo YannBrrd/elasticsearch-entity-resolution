@@ -7,6 +7,7 @@ import no.priv.garshol.duke.RecordImpl;
 import no.priv.garshol.duke.comparators.Levenshtein;
 import no.priv.garshol.duke.utils.ObjectUtils;
 import no.priv.garshol.duke.utils.Utils;
+import org.apache.log4j.Logger;
 import org.elasticsearch.ElasticSearchIllegalArgumentException;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
@@ -230,6 +231,9 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             final double high,
             final double low,
             final Comparator comparator) {
+
+        Logger logger = Logger.getLogger("Script");
+        logger.info(String.format("v1 :%s v2 : %s high : %s low %s comp : %s", v1, v2, high, low, comparator));
 
         if (comparator == null) {
             return AVERAGE_SCORE; // we ignore properties with no comparator

@@ -361,21 +361,21 @@ Threshold can be set using ```min_score``` as described in [Elasticsearch docume
 #### Response
 ```javascript
 {
-  "took" : 8,
+  "took" : 46,
   "timed_out" : false,
   "_shards" : {
-    "total" : 1,
-    "successful" : 1,
+    "total" : 5,
+    "successful" : 5,
     "failed" : 0
   },
   "hits" : {
     "total" : 1,
-    "max_score" : 0.7192429,
+    "max_score" : 0.97579086,
     "hits" : [ {
       "_index" : "test",
       "_type" : "city",
       "_id" : "3",
-      "_score" : 0.7192429, "_source" : {"city": "South Portland", "state": "ME", "population": 25002, "position": "43.631549,70.272724"}
+      "_score" : 0.97579086, "_source" : {"city":"South Portland","state":"ME","population":25002,"position":"43.631549,70.272724"}
     } ]
   }
 }
