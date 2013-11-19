@@ -201,7 +201,7 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
         assertThat(searchResponse.getHits().getAt(0).getSource().get("city")
                 .toString(), equalTo("South Portland"));
         assertThat(searchResponse.getHits().getAt(0).getScore(), equalTo(Float
-                .valueOf("0.97579086").floatValue()));
+                .valueOf("0.99191034").floatValue()));
 
         assertThat(searchResponse.getHits().getAt(1).getSource().get("city")
                 .toString(), equalTo("Portland"));
@@ -209,13 +209,13 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
                 .valueOf("0.29081574").floatValue()));
 
         assertThat(searchResponse.getHits().getAt(2).getSource().get("city")
-                .toString(), equalTo("Boston"));
+                .toString(), equalTo("South Burlington"));
         assertThat(searchResponse.getHits().getAt(2).getScore(), equalTo(Float
-                .valueOf("0.057230186").floatValue()));
+                .valueOf("0.13437314").floatValue()));
 
         assertThat(searchResponse.getHits().getAt(3).getSource().get("city")
-                .toString(), equalTo("South Burlington"));
+                .toString(), equalTo("Boston"));
         assertThat(searchResponse.getHits().getAt(3).getScore(), equalTo(Float
-                .valueOf("0.049316783").floatValue()));
+                .valueOf("0.057230186").floatValue()));
     }
 }
