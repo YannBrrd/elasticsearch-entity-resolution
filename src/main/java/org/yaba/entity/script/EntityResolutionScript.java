@@ -41,12 +41,15 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     private static final String FIELDS = "fields";
     private static final String COMPARATOR = "comparator";
     private static final String CLEANERS = "cleaners";
+    private static final String PARAMS = "params";
+    private static final String NAME = "name";
     private static final String HIGH = "high";
     private static final String LOW = "low";
     /**
      * . Average score
      */
     private static final double AVERAGE_SCORE = 0.5;
+
     /**
      * . Cache to store configuration
      */
@@ -102,29 +105,54 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     /**
      * . Reads & instantiates cleaners
      *
-     * @param arrayList array of cleaners from JSON
+     * @param cleanersList array of cleaners from JSON
      * @return the list of instantiated cleaners
      */
     private static List<Cleaner> getCleaners(
-            final List<String> arrayList) {
+            final List<Map<String, String>> cleanersList) {
         List<Cleaner> cleanList = new ArrayList<Cleaner>();
 
-        for (String cleanerName : arrayList) {
-            Cleaner cleaner = (Cleaner) ObjectUtils.instantiate(cleanerName);
+        for (Map aCleaner : cleanersList) {
+            Cleaner cleaner = (Cleaner) ObjectUtils.instantiate((String) aCleaner.get(NAME));
+            setParams(cleaner, aCleaner.get(PARAMS));
             cleanList.add(cleaner);
         }
         return cleanList;
     }
 
+
     /**
+     * Sets params for cleaners or comparators
+     *
+     * @param anObject the object to parametrize
+     * @param params params list
+     */
+    private static void setParams(Object anObject, Object params) {
+        if (params != null) {
+            Map<String, String> paramsMap = (Map<String, String>) params;
+            for (String key : paramsMap.keySet()) {
+                ObjectUtils.setBeanProperty(anObject, key, paramsMap.get(key), null);
+            }
+        }
+    }
+
+    /**
+     * Gets comparator
+     *
      * @param value from JSON payload
      * @return instantiated Comparator
      */
     private static Comparator getComparator(final Map<String, Object> value) {
+        Map<String, Object> compEntity = (Map<String, Object>) value.get(COMPARATOR);
         String comparatorName =
-                ((value.get(COMPARATOR) == null) ? Levenshtein.class.getName() : (String) value.get(COMPARATOR));
+                ((compEntity.get(NAME) == null) ? Levenshtein.class.getName() : (String) compEntity.get(NAME));
 
-        return (Comparator) ObjectUtils.instantiate(comparatorName);
+
+        Comparator comp = (Comparator) ObjectUtils.instantiate(comparatorName);
+
+        setParams(comp, compEntity.get(PARAMS));
+
+        return comp;
     }
 
     /**
@@ -302,7 +330,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
 
                     String field = (String) confField.get("field");
                     List<Cleaner> cleanList =
-                            getCleaners((ArrayList<String>) confField
+                            getCleaners((ArrayList<Map<String, String>>) confField
                                     .get(CLEANERS));
 
                     map.put(CLEANERS, cleanList);
@@ -366,7 +394,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             String field = (String) value.get("field");
 
             List<Cleaner> cleanList =
-                    getCleaners((ArrayList<String>) value.get(CLEANERS));
+                    getCleaners((ArrayList<Map<String, String>>) value.get(CLEANERS));
 
             map.put(CLEANERS, cleanList);
 

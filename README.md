@@ -41,30 +41,51 @@ This mode allows you to parametrise the plugin for each request you fire. It is 
           "fields" : [ {
             "field" : "city",
             "value" : "South",
-            "cleaners" : [ "no.priv.garshol.duke.cleaners.TrimCleaner", "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "cleaners" : [ {
+              "name" : "no.priv.garshol.duke.cleaners.TrimCleaner"
+            }, {
+              "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+            } ],
             "high" : 0.95,
-            "comparator" : "no.priv.garshol.duke.comparators.JaroWinkler",
+            "comparator" : {
+              "name" : "no.priv.garshol.duke.comparators.JaroWinkler"
+            },
             "low" : 0.1
           }, {
             "field" : "state",
             "value" : "ME",
-            "cleaners" : [ "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "cleaners" : [ {
+              "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+            } ],
             "high" : 0.95,
-            "comparator" : "no.priv.garshol.duke.comparators.JaroWinkler",
+            "comparator" : {
+              "name" : "no.priv.garshol.duke.comparators.JaroWinkler"
+            },
             "low" : 0.1
           }, {
             "field" : "population",
             "value" : "26000",
-            "cleaners" : [ "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner" ],
+            "cleaners" : [ {
+              "name" : "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
+            } ],
             "high" : 0.95,
-            "comparator" : "no.priv.garshol.duke.comparators.NumericComparator",
+            "comparator" : {
+              "name" : "no.priv.garshol.duke.comparators.NumericComparator"
+            },
             "low" : 0.1
           }, {
             "field" : "position",
             "value" : "43,70",
-            "cleaners" : [ "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "cleaners" : [ {
+              "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+            } ],
             "high" : 0.95,
-            "comparator" : "no.priv.garshol.duke.comparators.GeopositionComparator",
+            "comparator" : {
+              "name" : "no.priv.garshol.duke.comparators.GeopositionComparator",
+              "params" : {
+                "max-distance" : "100"
+              }
+            },
             "low" : 0.1
           } ]
         }
@@ -117,44 +138,53 @@ Once you are certain of your script parametrization, it is quite comfortable to 
 ##### Parameters
 ```javascript
 {
-  "entity": {
-    "fields": [
-      {
-        "field": "city",
-        "cleaners": [
-          "no.priv.garshol.duke.cleaners.TrimCleaner",
-          "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
-        ],
-        "comparator": "no.priv.garshol.duke.comparators.JaroWinkler",
-        "low": 0.1,
-        "high": 0.95
+  "entity" : {
+    "fields" : [ {
+      "field" : "city",
+      "cleaners" : [ {
+        "name" : "no.priv.garshol.duke.cleaners.TrimCleaner"
+      }, {
+        "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+      } ],
+      "high" : 0.95,
+      "comparator" : {
+        "name" : "no.priv.garshol.duke.comparators.JaroWinkler"
       },
-      {
-        "field": "state",
-        "cleaners": [
-          "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
-        ],
-        "comparator": "no.priv.garshol.duke.comparators.JaroWinkler",
-        "low": 0.1,
-        "high": 0.95
+      "low" : 0.1
+    }, {
+      "field" : "state",
+      "cleaners" : [ {
+        "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+      } ],
+      "high" : 0.95,
+      "comparator" : {
+        "name" : "no.priv.garshol.duke.comparators.JaroWinkler"
       },
-      {
-        "field": "population",
-        "cleaners": [
-          "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
-        ],
-        "comparator": "no.priv.garshol.duke.comparators.NumericComparator",
-        "low": 0.1,
-        "high": 0.95
+      "low" : 0.1
+    }, {
+      "field" : "population",
+      "cleaners" : [ {
+        "name" : "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
+      } ],
+      "high" : 0.95,
+      "comparator" : {
+        "name" : "no.priv.garshol.duke.comparators.NumericComparator"
       },
-      {
-        "field" : "position",
-        "cleaners" : [ "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
-        "high" : 0.95,
-        "comparator" : "no.priv.garshol.duke.comparators.GeopositionComparator",
-        "low" : 0.1
-      }
-    ]
+      "low" : 0.1
+    }, {
+      "field" : "position",
+      "cleaners" : [ {
+        "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+      } ],
+      "high" : 0.95,
+      "comparator" : {
+        "name" : "no.priv.garshol.duke.comparators.GeopositionComparator",
+        "params" : {
+          "max-distance" : "100"
+        }
+      },
+      "low" : 0.1
+    } ]
   }
 }
 ```
@@ -167,7 +197,6 @@ Once you are certain of your script parametrization, it is quite comfortable to 
     "custom_score": {
       "query": {
         "match_all": {
-          
         }
       },
       "script": "entity-resolution",
@@ -211,7 +240,9 @@ List of fields to compare, and parametrisation. Should always be an array.
 * ```field``` is the name of the field to compare to.
 * ```value``` is the value of the field to compare.
 * ```cleaners``` is the list of data cleaners to apply. Should always be an array. Should always be full qualified class name.
-* ```comparator``` is the full qualified class name of the comparator to use. Note : you can implement your own, and put it in the claspath. It should work (not tested yet).
+    ```cleaners``` can be parametrized (see examples).
+* ```comparator``` is the full qualified class name of the comparator to use. Note : you can implement your own, and put it in the classpath. It should work (not tested yet).
+    ```comparators``` can be parametrized (see examples).
 * ```low``` is the lowest probability for this field (if the probability is inferior, this one will be used).
 * ```high``` is the highest probability for this field (if the probability is superior, this one will be used).
 
@@ -239,30 +270,51 @@ Threshold can be set using ```min_score``` as described in [Elasticsearch docume
           "fields" : [ {
             "field" : "city",
             "value" : "South",
-            "cleaners" : [ "no.priv.garshol.duke.cleaners.TrimCleaner", "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "cleaners" : [ {
+              "name" : "no.priv.garshol.duke.cleaners.TrimCleaner"
+            }, {
+              "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+            } ],
             "high" : 0.95,
-            "comparator" : "no.priv.garshol.duke.comparators.JaroWinkler",
+            "comparator" : {
+              "name" : "no.priv.garshol.duke.comparators.JaroWinkler"
+            },
             "low" : 0.1
           }, {
             "field" : "state",
             "value" : "ME",
-            "cleaners" : [ "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "cleaners" : [ {
+              "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+            } ],
             "high" : 0.95,
-            "comparator" : "no.priv.garshol.duke.comparators.JaroWinkler",
+            "comparator" : {
+              "name" : "no.priv.garshol.duke.comparators.JaroWinkler"
+            },
             "low" : 0.1
           }, {
             "field" : "population",
             "value" : "26000",
-            "cleaners" : [ "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner" ],
+            "cleaners" : [ {
+              "name" : "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
+            } ],
             "high" : 0.95,
-            "comparator" : "no.priv.garshol.duke.comparators.NumericComparator",
+            "comparator" : {
+              "name" : "no.priv.garshol.duke.comparators.NumericComparator"
+            },
             "low" : 0.1
           }, {
             "field" : "position",
             "value" : "43,70",
-            "cleaners" : [ "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" ],
+            "cleaners" : [ {
+              "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+            } ],
             "high" : 0.95,
-            "comparator" : "no.priv.garshol.duke.comparators.GeopositionComparator",
+            "comparator" : {
+              "name" : "no.priv.garshol.duke.comparators.GeopositionComparator",
+              "params" : {
+                "max-distance" : "100"
+              }
+            },
             "low" : 0.1
           } ]
         }
@@ -276,7 +328,7 @@ Threshold can be set using ```min_score``` as described in [Elasticsearch docume
 
 ```javascript
 {
-  "took" : 279,
+  "took" : 151,
   "timed_out" : false,
   "_shards" : {
     "total" : 1,
