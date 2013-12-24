@@ -32,48 +32,55 @@ curl -XPUT "http://localhost:9200/entity/" -d '{
 }'
 echo
 curl -XPUT "localhost:9200/entity/entity-configuration/test" -d '{
-  "entity": {
-    "fields": [
-      {
-        "field": "city",
-        "cleaners": [
-          "no.priv.garshol.duke.cleaners.TrimCleaner",
-          "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
-        ],
-        "comparator": "no.priv.garshol.duke.comparators.JaroWinkler",
-        "low": 0.1,
-        "high": 0.95
-      },
-      {
-        "field": "state",
-        "cleaners": [
-          "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
-        ],
-        "comparator": "no.priv.garshol.duke.comparators.JaroWinkler",
-        "low": 0.1,
-        "high": 0.95
-      },
-      {
-        "field": "population",
-        "cleaners": [
-          "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
-        ],
-        "comparator": "no.priv.garshol.duke.comparators.NumericComparator",
-        "low": 0.1,
-        "high": 0.95
-      },
-      {
-        "field": "position",
-        "cleaners": [
-        "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
-        ],
-        "comparator": "no.priv.garshol.duke.comparators.GeopositionComparator",
-        "low": 0.1,
-        "high": 0.95
-        }
-    ]
-  }
-}'
+   "entity" : {
+     "fields" : [ {
+       "field" : "city",
+       "cleaners" : [ {
+         "name" : "no.priv.garshol.duke.cleaners.TrimCleaner"
+       }, {
+         "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+       } ],
+       "high" : 0.95,
+       "comparator" : {
+         "name" : "no.priv.garshol.duke.comparators.JaroWinkler"
+       },
+       "low" : 0.1
+     }, {
+       "field" : "state",
+       "cleaners" : [ {
+         "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+       } ],
+       "high" : 0.95,
+       "comparator" : {
+         "name" : "no.priv.garshol.duke.comparators.JaroWinkler"
+       },
+       "low" : 0.1
+     }, {
+       "field" : "population",
+       "cleaners" : [ {
+         "name" : "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner"
+       } ],
+       "high" : 0.95,
+       "comparator" : {
+         "name" : "no.priv.garshol.duke.comparators.NumericComparator"
+       },
+       "low" : 0.1
+     }, {
+       "field" : "position",
+       "cleaners" : [ {
+         "name" : "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"
+       } ],
+       "high" : 0.95,
+       "comparator" : {
+         "name" : "no.priv.garshol.duke.comparators.GeopositionComparator",
+         "params" : {
+           "max-distance" : "100"
+         }
+       },
+       "low" : 0.1
+     } ]
+   }
+ }'
 echo
 curl -s "localhost:9200/test/city/_search?pretty=true" -d '{
   "size": 4,
