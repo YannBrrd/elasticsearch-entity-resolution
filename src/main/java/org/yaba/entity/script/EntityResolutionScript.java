@@ -23,7 +23,7 @@ import org.elasticsearch.node.Node;
 import org.elasticsearch.script.AbstractDoubleSearchScript;
 import org.elasticsearch.script.ExecutableScript;
 import org.elasticsearch.script.NativeScriptFactory;
-import org.elasticsearch.search.lookup.SourceLookup;
+import org.elasticsearch.search.lookup.DocLookup;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -236,7 +236,6 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         }
 
         double sim = comparator.compare(v1, v2);
-
         if (sim < AVERAGE_SCORE) {
             return low;
         } else {
@@ -403,13 +402,12 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     public double runAsDouble() {
         HashMap<String, Collection<String>> props =
                 new HashMap<String, Collection<String>>();
-        SourceLookup source = source();
-
+        DocLookup doc = doc();
         Collection<String> docKeys = comparedRecord.getProperties();
 
         for (String key : docKeys) {
-            if (source.containsKey(key)) {
-                String value = source.get(key).toString();
+            if (doc.containsKey(key)) {
+                String value = getFieldValue(doc.get(key));
                 props.put(key, value == null
                         ? Collections.singleton("")
                         : Collections.singleton(value));
@@ -418,6 +416,10 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         Record r2 = new RecordImpl(props);
         return compare(comparedRecord, r2, entityParams);
     }
+
+    /**
+
+     */
 
     /**
      * Factory
