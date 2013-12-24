@@ -25,6 +25,8 @@ A list of [available comparators] (http://code.google.com/p/duke/wiki/Comparator
 
 [Run examples](http://github.com/YannBrrd/elasticsearch-entity-resolution/wiki/Run-Examples)
 
+[Contact](http://github.com/YannBrrd/elasticsearch-entity-resolution/wiki/contact)
+
 [Credits](http://github.com/YannBrrd/elasticsearch-entity-resolution/wiki/credits)
 
 [What else ?](http://github.com/YannBrrd/elasticsearch-entity-resolution/wiki/what_else)
