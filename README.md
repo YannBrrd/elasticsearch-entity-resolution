@@ -23,7 +23,7 @@ A list of [available comparators] (http://code.google.com/p/duke/wiki/Comparator
 
 [Going to indus mode](http://github.com/YannBrrd/elasticsearch-entity-resolution/wiki/indus)
 
-[Run examples](http://github.com/YannBrrd/elasticsearch-entity-resolution/wiki/examples)
+[Run examples](http://github.com/YannBrrd/elasticsearch-entity-resolution/wiki/Run-Examples)
 
 [Credits](http://github.com/YannBrrd/elasticsearch-entity-resolution/wiki/credits)
 
