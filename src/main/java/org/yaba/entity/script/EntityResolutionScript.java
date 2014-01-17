@@ -7,7 +7,7 @@ import no.priv.garshol.duke.RecordImpl;
 import no.priv.garshol.duke.comparators.Levenshtein;
 import no.priv.garshol.duke.utils.ObjectUtils;
 import no.priv.garshol.duke.utils.Utils;
-import org.elasticsearch.ElasticSearchIllegalArgumentException;
+import org.elasticsearch.ElasticsearchIllegalArgumentException;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.Nullable;
@@ -80,7 +80,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             final Client aClient) {
 
         if (params.get(FIELDS) == null) {
-            throw new ElasticSearchIllegalArgumentException(
+            throw new ElasticsearchIllegalArgumentException(
                     "Missing the 'fields' parameters");
         }
 
@@ -310,7 +310,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                                 .get("entity");
                 entityParams = new HashMap<String, HashMap<String, Object>>();
                 if (entityConf == null) {
-                    throw new ElasticSearchIllegalArgumentException(
+                    throw new ElasticsearchIllegalArgumentException(
                             "No conf found in " + configIndex + "/"
                                     + configType + "/" + configName);
                 }
@@ -320,7 +320,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                                 .get("fields");
 
                 if (confFields == null) {
-                    throw new ElasticSearchIllegalArgumentException(
+                    throw new ElasticsearchIllegalArgumentException(
                             "Bad conf found in " + configIndex + "/"
                                     + configType + "/" + configName);
                 }
@@ -502,7 +502,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         public final ExecutableScript newScript(
                 @Nullable final Map<String, Object> params) {
             if (params.get("entity") == null) {
-                throw new ElasticSearchIllegalArgumentException(
+                throw new ElasticsearchIllegalArgumentException(
                         "Missing the parameters");
             }
 
