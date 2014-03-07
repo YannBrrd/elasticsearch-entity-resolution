@@ -9,7 +9,7 @@ This project is an interactive entity resolution plugin for [Elasticsearch](http
 
 To understand basics, go to [Duke project documentation](https://github.com/larsga/Duke/wiki/XMLConfig).
 
-A list of [available comparators] (http://code.google.com/p/duke/wiki/Comparator) is available [here](https://github.com/larsga/Duke/wiki/Comparator).
+A list of [available comparators] (https://github.com/larsga/Duke/wiki/Comparator) is available [here](https://github.com/larsga/Duke/wiki/Comparator).
 
 ### Documentation
 
