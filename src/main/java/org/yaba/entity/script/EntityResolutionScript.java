@@ -110,7 +110,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
      */
     private static List<Cleaner> getCleaners(
             final List<Map<String, String>> cleanersList) {
-        List<Cleaner> cleanList = new ArrayList<Cleaner>();
+        List<Cleaner> cleanList = new ArrayList<>();
 
         for (Map aCleaner : cleanersList) {
             Cleaner cleaner = (Cleaner) ObjectUtils.instantiate((String) aCleaner.get(NAME));
@@ -125,7 +125,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
      * Sets params for cleaners or comparators
      *
      * @param anObject the object to parametrize
-     * @param params params list
+     * @param params   params list
      */
     private static void setParams(Object anObject, Object params) {
         if (params != null) {
@@ -308,7 +308,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                 Map<String, Object> entityConf =
                         (Map<String, Object>) response.getSource()
                                 .get("entity");
-                entityParams = new HashMap<String, HashMap<String, Object>>();
+                entityParams = new HashMap<>();
                 if (entityConf == null) {
                     throw new ElasticsearchIllegalArgumentException(
                             "No conf found in " + configIndex + "/"
@@ -326,7 +326,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                 }
 
                 for (Map<String, Object> confField : confFields) {
-                    HashMap<String, Object> map = new HashMap<String, Object>();
+                    HashMap<String, Object> map = new HashMap<>();
 
                     String field = (String) confField.get("field");
                     List<Cleaner> cleanList =
@@ -358,7 +358,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         }
 
         HashMap<String, Collection<String>> props =
-                new HashMap<String, Collection<String>>();
+                new HashMap<>();
 
         readFields(fields, props);
         return new RecordImpl(props);
@@ -385,11 +385,11 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             final List<Map<String, Object>> fieldsParams) {
 
         Map<String, Collection<String>> props =
-                new HashMap<String, Collection<String>>();
-        entityParams = new HashMap<String, HashMap<String, Object>>();
+                new HashMap<>();
+        entityParams = new HashMap<>();
 
         for (Map<String, Object> value : fieldsParams) {
-            HashMap<String, Object> map = new HashMap<String, Object>();
+            HashMap<String, Object> map = new HashMap<>();
 
             String field = (String) value.get("field");
 
@@ -429,7 +429,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     @Override
     public double runAsDouble() {
         HashMap<String, Collection<String>> props =
-                new HashMap<String, Collection<String>>();
+                new HashMap<>();
         DocLookup doc = doc();
         Collection<String> docKeys = comparedRecord.getProperties();
 

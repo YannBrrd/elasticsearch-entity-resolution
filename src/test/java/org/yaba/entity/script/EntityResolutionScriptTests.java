@@ -55,7 +55,7 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
 
         assertAcked(prepareCreate("test").addMapping("city", test_mapping));
 
-        List<IndexRequestBuilder> indexBuilders = new ArrayList<IndexRequestBuilder>();
+        List<IndexRequestBuilder> indexBuilders = new ArrayList<>();
 
         // Index main records
         indexBuilders.add(client()
@@ -104,8 +104,8 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
         Map<String, Object> params =
                 MapBuilder.<String, Object>newMapBuilder().map();
 
-        ArrayList<Map<String, Object>> fields =
-                new ArrayList<Map<String, Object>>();
+        ArrayList<Map<String, Object>> fields;
+        fields = new ArrayList<>();
 
         Map<String, Object> aField =
                 MapBuilder

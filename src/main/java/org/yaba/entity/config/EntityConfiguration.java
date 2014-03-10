@@ -1,6 +1,9 @@
 package org.yaba.entity.config;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class EntityConfiguration {
 
@@ -9,19 +12,13 @@ public class EntityConfiguration {
     public EntityConfiguration(List<Map<String, Object>> params) {
         Iterator<Map<String, Object>> it = params.iterator();
 
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<>();
 
         while (it.hasNext()) {
             Map<String, Object> map = it.next();
             if (!(map.get("field") == null)) {
                 parameters.put((String) map.get("field"), map);
             }
-            /*
-             * Set<String> mapKeys = map.keySet(); Iterator<String> mapIt =
-             * mapKeys.iterator(); while (mapIt.hasNext()) { String key =
-             * mapIt.next(); logger.info(key + " : " + map.get(key) + " : " +
-             * map.get(key).getClass());
-             */
         }
     }
 
