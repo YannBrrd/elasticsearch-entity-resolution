@@ -5,7 +5,6 @@ import no.priv.garshol.duke.Comparator;
 import no.priv.garshol.duke.Record;
 import no.priv.garshol.duke.RecordImpl;
 import no.priv.garshol.duke.comparators.Levenshtein;
-import no.priv.garshol.duke.utils.ObjectUtils;
 import no.priv.garshol.duke.utils.Utils;
 import org.elasticsearch.ElasticsearchIllegalArgumentException;
 import org.elasticsearch.action.get.GetResponse;
@@ -27,6 +26,9 @@ import org.elasticsearch.search.lookup.DocLookup;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static no.priv.garshol.duke.utils.ObjectUtils.instantiate;
+import static no.priv.garshol.duke.utils.ObjectUtils.setBeanProperty;
 
 /**
  *
@@ -65,7 +67,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     /**
      * . Script parameters
      */
-    private HashMap<String, HashMap<String, Object>> entityParams;
+    private Map<String, HashMap<String, Object>> entityParams;
 
     /**
      * . Script class
@@ -113,7 +115,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         List<Cleaner> cleanList = new ArrayList<>();
 
         for (Map aCleaner : cleanersList) {
-            Cleaner cleaner = (Cleaner) ObjectUtils.instantiate((String) aCleaner.get(NAME));
+            Cleaner cleaner = (Cleaner) instantiate((String) aCleaner.get(NAME));
             setParams(cleaner, aCleaner.get(PARAMS));
             cleanList.add(cleaner);
         }
@@ -131,7 +133,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         if (params != null) {
             Map<String, String> paramsMap = (Map<String, String>) params;
             for (String key : paramsMap.keySet()) {
-                ObjectUtils.setBeanProperty(anObject, key, paramsMap.get(key), null);
+                setBeanProperty(anObject, key, paramsMap.get(key), null);
             }
         }
     }
@@ -148,7 +150,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                 ((compEntity.get(NAME) == null) ? Levenshtein.class.getName() : (String) compEntity.get(NAME));
 
 
-        Comparator comp = (Comparator) ObjectUtils.instantiate(comparatorName);
+        Comparator comp = (Comparator) instantiate(comparatorName);
 
         setParams(comp, compEntity.get(PARAMS));
 
@@ -195,7 +197,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     private static double compare(
             final Record r1,
             final Record r2,
-            final HashMap<String, HashMap<String, Object>> params) {
+            final Map<String, HashMap<String, Object>> params) {
         double prob = AVERAGE_SCORE;
 
         for (String propname : r1.getProperties()) {
@@ -353,7 +355,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                     entityParams.put(field, map);
                 }
                 cache.put(configIndex + "." + configType + "." + configName,
-                        entityParams);
+                        (HashMap) entityParams);
             }
         }
 
