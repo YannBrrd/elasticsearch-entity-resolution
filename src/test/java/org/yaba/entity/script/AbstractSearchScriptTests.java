@@ -13,7 +13,7 @@ import org.elasticsearch.test.ElasticsearchIntegrationTest.Scope;
 public class AbstractSearchScriptTests extends ElasticsearchIntegrationTest {
 
     @Override
-    protected Settings nodeSettings(int nodeOrdinal) {
+    protected final Settings nodeSettings(int nodeOrdinal) {
         return ImmutableSettings.settingsBuilder()
                 .put("gateway.type", "none")
                 .put("index.number_of_shards", 1)

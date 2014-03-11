@@ -5,7 +5,6 @@ import no.priv.garshol.duke.Comparator;
 import no.priv.garshol.duke.Record;
 import no.priv.garshol.duke.RecordImpl;
 import no.priv.garshol.duke.comparators.Levenshtein;
-import no.priv.garshol.duke.utils.Utils;
 import org.elasticsearch.ElasticsearchIllegalArgumentException;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
@@ -29,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import static no.priv.garshol.duke.utils.ObjectUtils.instantiate;
 import static no.priv.garshol.duke.utils.ObjectUtils.setBeanProperty;
+import static no.priv.garshol.duke.utils.Utils.*;
 
 /**
  *
@@ -132,8 +132,8 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     private static void setParams(Object anObject, Object params) {
         if (params != null) {
             Map<String, String> paramsMap = (Map<String, String>) params;
-            for (String key : paramsMap.keySet()) {
-                setBeanProperty(anObject, key, paramsMap.get(key), null);
+            for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
+                setBeanProperty(anObject, entry.getKey() , entry.getValue(), null);
             }
         }
     }
@@ -204,6 +204,11 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             Collection<String> vs1 = r1.getValues(propname);
             Collection<String> vs2 = r2.getValues(propname);
 
+
+            if (vs1 == null || vs1.isEmpty() || vs2 == null || vs2.isEmpty()) {
+                continue; // no values to compare, so skip
+            }
+
             Comparator comp =
                     (Comparator) params.get(propname).get(COMPARATOR);
             ArrayList<Cleaner> cleanersList =
@@ -212,35 +217,36 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             Double max = (Double) params.get(propname).get(HIGH);
             Double min = (Double) params.get(propname).get(LOW);
 
-            if (vs1 == null || vs1.isEmpty() || vs2 == null || vs2.isEmpty()) {
-                continue; // no values to compare, so skip
+            double high = computeProb(vs1, vs2, comp, cleanersList, max, min);
+            prob = computeBayes(prob, high);
+        }
+        return prob;
+    }
+
+    private static double computeProb(Collection<String> vs1, Collection<String> vs2, Comparator comp, List<Cleaner> cleanersList, Double max, Double min) {
+        double high = 0.0;
+        for (String v1 : vs1) {
+            if (v1.equals("")) {
+                continue;
             }
 
-            double high = 0.0;
-            for (String v1 : vs1) {
-                if (v1.equals("")) {
+            v2fieldloop:
+            for (String v2 : vs2) {
+                if (v2.equals("")) {
                     continue;
                 }
 
-                v2fieldloop:
-                for (String v2 : vs2) {
-                    if (v2.equals("")) {
-                        continue;
+                for (Cleaner cl : cleanersList) {
+                    v2 = cl.clean(v2);
+                    if ((v2 == null) || v2.equals("")) {
+                        continue v2fieldloop;
                     }
-
-                    for (Cleaner cl : cleanersList) {
-                        v2 = cl.clean(v2);
-                        if ((v2 == null) || v2.equals("")) {
-                            continue v2fieldloop;
-                        }
-                    }
-                    double p = compare(v1, v2, max, min, comp);
-                    high = Math.max(high, p);
                 }
+                double p = compare(v1, v2, max, min, comp);
+                high = Math.max(high, p);
             }
-            prob = Utils.computeBayes(prob, high);
         }
-        return prob;
+        return high;
     }
 
     /**

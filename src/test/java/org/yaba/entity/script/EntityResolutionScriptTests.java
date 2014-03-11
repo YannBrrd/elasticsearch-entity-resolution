@@ -5,17 +5,18 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.collect.MapBuilder;
 import org.elasticsearch.common.lucene.search.function.CombineFunction;
-import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.concurrent.ExecutionException;
 
 import static java.lang.Float.valueOf;
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.functionScoreQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.test.hamcrest.ElasticsearchAssertions.assertAcked;
@@ -23,80 +24,98 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
 
-    private final static Logger logger = Logger.getAnonymousLogger();
+    public static final String CITY = "city";
+    public static final String PROPERTIES = "properties";
+    public static final String TYPE = "type";
+    public static final String STRING = "string";
+    public static final String STATE = "state";
+    public static final String INDEX = "index";
+    public static final String NOT_ANALYZED = "not_analyzed";
+    public static final String POPULATION = "population";
+    public static final String INTEGER = "integer";
+    public static final String POSITION = "position";
+    public static final String GEO_POINT = "geo_point";
+    public static final String TEST = "test";
+    public static final String FIELD = "field";
+    public static final String VALUE = "value";
+    public static final String COMPARATOR = "comparator";
+    public static final String NAME = "name";
+    public static final String LOW = "low";
+    public static final String HIGH = "high";
+    public static final String CLEANERS = "cleaners";
 
     @Test
-    public void testEntity() throws Exception {
+    public final void testEntity() throws IOException, ExecutionException, InterruptedException {
 
 
         // Create a new test index
-        String test_mapping =
-                XContentFactory.jsonBuilder()
+        String testMapping =
+                jsonBuilder()
                         .startObject()
-                        .startObject("city")
-                        .startObject("properties")
-                        .startObject("city")
-                        .field("type", "string")
+                        .startObject(CITY)
+                        .startObject(PROPERTIES)
+                        .startObject(CITY)
+                        .field(TYPE, STRING)
                         .endObject()
-                        .startObject("state")
-                        .field("type", "string")
-                        .field("index", "not_analyzed")
+                        .startObject(STATE)
+                        .field(TYPE, STRING)
+                        .field(INDEX, NOT_ANALYZED)
                         .endObject()
-                        .startObject("population")
-                        .field("type", "integer")
+                        .startObject(POPULATION)
+                        .field(TYPE, INTEGER)
                         .endObject()
-                        .startObject("position")
-                        .field("type", "geo_point")
+                        .startObject(POSITION)
+                        .field(TYPE, GEO_POINT)
                         .endObject()
                         .endObject()
                         .endObject()
                         .endObject()
                         .string();
 
-        assertAcked(prepareCreate("test").addMapping("city", test_mapping));
+        assertAcked(prepareCreate(TEST).addMapping(CITY, testMapping));
 
         List<IndexRequestBuilder> indexBuilders = new ArrayList<>();
 
         // Index main records
         indexBuilders.add(client()
-                .prepareIndex("test", "city", "1")
-                .setSource("city", "Cambridge", "state", "MA", "population",
-                        105162, "position", "42.373746,71.110554"));
+                .prepareIndex(TEST, CITY, "1")
+                .setSource(CITY, "Cambridge", STATE, "MA", POPULATION,
+                        105162, POSITION, "42.373746,71.110554"));
         indexBuilders.add(client()
-                .prepareIndex("test", "city", "2")
-                .setSource("city", "South Burlington", "state", "VT",
-                        "population", 17904, "position", "44.451846,73.181710"));
+                .prepareIndex(TEST, CITY, "2")
+                .setSource(CITY, "South Burlington", STATE, "VT",
+                        POPULATION, 17904, POSITION, "44.451846,73.181710"));
         indexBuilders.add(client()
-                .prepareIndex("test", "city", "3")
-                .setSource("city", "South Portland", "state", "ME",
-                        "population", 25002, "position", "43.631549,70.272724"));
-        indexBuilders.add(client().prepareIndex("test", "city", "4")
-                .setSource("city", "Essex", "state", "VT", "population", 19587, "position", "44.492905,73.108601")
+                .prepareIndex(TEST, CITY, "3")
+                .setSource(CITY, "South Portland", STATE, "ME",
+                        POPULATION, 25002, POSITION, "43.631549,70.272724"));
+        indexBuilders.add(client().prepareIndex(TEST, CITY, "4")
+                .setSource(CITY, "Essex", STATE, "VT", POPULATION, 19587, POSITION, "44.492905,73.108601")
         );
         indexBuilders.add(client()
-                .prepareIndex("test", "city", "5")
-                .setSource("city", "Portland", "state", "ME", "population",
-                        66194, "position", "43.665116,70.269086"));
+                .prepareIndex(TEST, CITY, "5")
+                .setSource(CITY, "Portland", STATE, "ME", POPULATION,
+                        66194, POSITION, "43.665116,70.269086"));
         indexBuilders.add(client()
-                .prepareIndex("test", "city", "6")
-                .setSource("city", "Burlington", "state", "VT", "population",
-                        42417, "position", "44.484748,73.223157"));
+                .prepareIndex(TEST, CITY, "6")
+                .setSource(CITY, "Burlington", STATE, "VT", POPULATION,
+                        42417, POSITION, "44.484748,73.223157"));
         indexBuilders.add(client()
-                .prepareIndex("test", "city", "7")
-                .setSource("city", "Stamford", "state", "CT", "population",
-                        122643, "position", "41.074448,73.541316"));
+                .prepareIndex(TEST, CITY, "7")
+                .setSource(CITY, "Stamford", STATE, "CT", POPULATION,
+                        122643, POSITION, "41.074448,73.541316"));
         indexBuilders.add(client()
-                .prepareIndex("test", "city", "8")
-                .setSource("city", "Colchester", "state", "VT", "population",
-                        17067, "position", "44.3231,73.148"));
+                .prepareIndex(TEST, CITY, "8")
+                .setSource(CITY, "Colchester", STATE, "VT", POPULATION,
+                        17067, POSITION, "44.3231,73.148"));
         indexBuilders.add(client()
-                .prepareIndex("test", "city", "9")
-                .setSource("city", "Concord", "state", "NH", "population",
-                        42695, "position", "43.220093,71.549127"));
+                .prepareIndex(TEST, CITY, "9")
+                .setSource(CITY, "Concord", STATE, "NH", POPULATION,
+                        42695, POSITION, "43.220093,71.549127"));
         indexBuilders.add(client()
-                .prepareIndex("test", "city", "10")
-                .setSource("city", "Boston", "state", "MA", "population",
-                        617594, "position", "42.321597,71.089115"));
+                .prepareIndex(TEST, CITY, "10")
+                .setSource(CITY, "Boston", STATE, "MA", POPULATION,
+                        617594, POSITION, "42.321597,71.089115"));
 
         indexRandom(true, indexBuilders);
 
@@ -110,19 +129,19 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
         Map<String, Object> aField =
                 MapBuilder
                         .<String, Object>newMapBuilder()
-                        .put("field", "city")
-                        .put("value", "South")
-                        .put("comparator", MapBuilder.<String, Object>newMapBuilder()
-                                .put("name", "no.priv.garshol.duke.comparators.JaroWinkler")
+                        .put(FIELD, CITY)
+                        .put(VALUE, "South")
+                        .put(COMPARATOR, MapBuilder.<String, Object>newMapBuilder()
+                                .put(NAME, "no.priv.garshol.duke.comparators.JaroWinkler")
                                 .map())
-                        .put("low", 0.1)
-                        .put("high", 0.95)
-                        .put("cleaners", new Map[]{
+                        .put(LOW, 0.1)
+                        .put(HIGH, 0.95)
+                        .put(CLEANERS, new Map[]{
                                 MapBuilder.<String, Object>newMapBuilder()
-                                        .put("name", "no.priv.garshol.duke.cleaners.TrimCleaner")
+                                        .put(NAME, "no.priv.garshol.duke.cleaners.TrimCleaner")
                                         .map(),
                                 MapBuilder.<String, Object>newMapBuilder()
-                                        .put("name", "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner")
+                                        .put(NAME, "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner")
                                         .map()})
                         .map();
 
@@ -131,16 +150,16 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
         aField =
                 MapBuilder
                         .<String, Object>newMapBuilder()
-                        .put("field", "state")
-                        .put("value", "ME")
-                        .put("comparator", MapBuilder.<String, Object>newMapBuilder()
-                                .put("name", "no.priv.garshol.duke.comparators.JaroWinkler")
+                        .put(FIELD, STATE)
+                        .put(VALUE, "ME")
+                        .put(COMPARATOR, MapBuilder.<String, Object>newMapBuilder()
+                                .put(NAME, "no.priv.garshol.duke.comparators.JaroWinkler")
                                 .map())
-                        .put("low", 0.1)
-                        .put("high", 0.95)
-                        .put("cleaners", new Map[]{
+                        .put(LOW, 0.1)
+                        .put(HIGH, 0.95)
+                        .put(CLEANERS, new Map[]{
                                 MapBuilder.<String, Object>newMapBuilder()
-                                        .put("name", "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner")
+                                        .put(NAME, "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner")
                                         .map()})
                         .map();
 
@@ -149,16 +168,16 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
         aField =
                 MapBuilder
                         .<String, Object>newMapBuilder()
-                        .put("field", "population")
-                        .put("value", "26000")
-                        .put("comparator", MapBuilder.<String, Object>newMapBuilder()
-                                .put("name", "no.priv.garshol.duke.comparators.NumericComparator")
+                        .put(FIELD, POPULATION)
+                        .put(VALUE, "26000")
+                        .put(COMPARATOR, MapBuilder.<String, Object>newMapBuilder()
+                                .put(NAME, "no.priv.garshol.duke.comparators.NumericComparator")
                                 .map())
-                        .put("low", 0.1)
-                        .put("high", 0.95)
-                        .put("cleaners", new Map[]{
+                        .put(LOW, 0.1)
+                        .put(HIGH, 0.95)
+                        .put(CLEANERS, new Map[]{
                                 MapBuilder.<String, Object>newMapBuilder()
-                                        .put("name", "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner")
+                                        .put(NAME, "no.priv.garshol.duke.cleaners.DigitsOnlyCleaner")
                                         .map()})
                         .map();
 
@@ -167,18 +186,18 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
         aField =
                 MapBuilder
                         .<String, Object>newMapBuilder()
-                        .put("field", "position")
-                        .put("value", "43,70")
-                        .put("comparator", MapBuilder.<String, Object>newMapBuilder()
-                                .put("name", "no.priv.garshol.duke.comparators.GeopositionComparator")
+                        .put(FIELD, POSITION)
+                        .put(VALUE, "43,70")
+                        .put(COMPARATOR, MapBuilder.<String, Object>newMapBuilder()
+                                .put(NAME, "no.priv.garshol.duke.comparators.GeopositionComparator")
                                 .put("params", MapBuilder.<String, Object>newMapBuilder()
                                         .put("max-distance", "100").map()
                                 ).map())
-                        .put("low", 0.1)
-                        .put("high", 0.95)
-                        .put("cleaners", new Map[]{
+                        .put(LOW, 0.1)
+                        .put(HIGH, 0.95)
+                        .put(CLEANERS, new Map[]{
                                 MapBuilder.<String, Object>newMapBuilder()
-                                        .put("name", "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner")
+                                        .put(NAME, "no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner")
                                         .map()})
                         .map();
 
@@ -192,8 +211,8 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
         // Find all objects
         SearchRequestBuilder request =
                 client()
-                        .prepareSearch("test")
-                        .setTypes("city")
+                        .prepareSearch(TEST)
+                        .setTypes(CITY)
                         .setQuery(
                                 functionScoreQuery(
                                         (matchAllQuery()))
@@ -210,22 +229,22 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
 
         logger.info(searchResponse.toString());
 
-        assertThat(searchResponse.getHits().getAt(0).getSource().get("city")
+        assertThat(searchResponse.getHits().getAt(0).getSource().get(CITY)
                 .toString(), equalTo("South Portland"));
         assertThat(searchResponse.getHits().getAt(0).getScore(), equalTo(
                 valueOf("0.97579086")));
 
-        assertThat(searchResponse.getHits().getAt(1).getSource().get("city")
+        assertThat(searchResponse.getHits().getAt(1).getSource().get(CITY)
                 .toString(), equalTo("Portland"));
         assertThat(searchResponse.getHits().getAt(1).getScore(), equalTo(
                 valueOf("0.29081574")));
 
-        assertThat(searchResponse.getHits().getAt(2).getSource().get("city")
+        assertThat(searchResponse.getHits().getAt(2).getSource().get(CITY)
                 .toString(), equalTo("Boston"));
         assertThat(searchResponse.getHits().getAt(2).getScore(), equalTo(
                 valueOf("0.057230186")));
 
-        assertThat(searchResponse.getHits().getAt(3).getSource().get("city")
+        assertThat(searchResponse.getHits().getAt(3).getSource().get(CITY)
                 .toString(), equalTo("South Burlington"));
         assertThat(searchResponse.getHits().getAt(3).getScore(), equalTo(
                 valueOf("0.049316783")));
