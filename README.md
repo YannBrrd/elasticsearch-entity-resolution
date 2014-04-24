@@ -5,7 +5,7 @@
 elasticsearch-entity-resolution
 ===================
 
-This project is an interactive entity resolution plugin for [Elasticsearch](http://www.elasticsearch.org) based on [Duke](http://github.com/larsga/Duke). Basically, it uses [Bayesian probabilities] (http://en.wikipedia.org/wiki/Bayesian_probability) to compute probability. You can pretty much use it an interactive deduplication engine.
+This project is an interactive entity resolution plugin for [Elasticsearch](http://www.elasticsearch.org) based on [Duke](http://github.com/larsga/Duke). Basically, it uses [Bayesian probabilities] (http://en.wikipedia.org/wiki/Bayesian_probability) to compute probability. You can pretty much use it as an interactive deduplication engine.
 
 To understand basics, go to [Duke project documentation](https://github.com/larsga/Duke/wiki/XMLConfig).
 
