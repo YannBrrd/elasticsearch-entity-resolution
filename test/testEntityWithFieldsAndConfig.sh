@@ -86,41 +86,44 @@ curl -s "localhost:9200/test/city/_search?pretty=true" -d '{
   "size": 4,
   "min_score" : 0.7,
   "query": {
-    "custom_score": {
+    "function_score": {
+      "boost_mode": "replace",
       "query": {
         "match_all": {
           
         }
       },
-      "script": "entity-resolution",
-      "lang": "native",
-      "params": {
-        "entity": {
-          "configuration": {
-            "index": "entity",
-            "type": "entity-configuration",
-            "name": "test"
-          },
-          "fields": [
-            {
-              "field": "city",
-              "value": "South"
+      "script_score": {
+        "script": "entity-resolution",
+        "lang": "native",
+        "params": {
+          "entity": {
+            "configuration": {
+              "index": "entity",
+              "type": "entity-configuration",
+              "name": "test"
             },
-            {
-              "field": "state",
-              "value": "ME"
-            },
-            {
-              "field": "population",
-              "value": "26000"
-            },
-            {
-              "field": "position",
-              "value": "43,70"
-            }
-          ]
+            "fields": [
+              {
+                "field": "city",
+                "value": "South"
+              },
+              {
+                "field": "state",
+                "value": "ME"
+              },
+              {
+                "field": "population",
+                "value": "26000"
+              },
+              {
+                "field": "position",
+                "value": "43,70"
+              }
+            ]
+          }
         }
-      }
+      }    
     }
   }
 }'
