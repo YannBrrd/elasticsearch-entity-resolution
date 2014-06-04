@@ -4,6 +4,8 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.collect.MapBuilder;
 import org.elasticsearch.common.lucene.search.function.CombineFunction;
+import org.elasticsearch.common.lucene.search.function.FiltersFunctionScoreQuery;
+import org.elasticsearch.common.lucene.search.function.ScoreFunction;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
@@ -15,10 +17,11 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static java.lang.Float.valueOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
+public class EntityResolutionScriptScoreTests extends AbstractSearchScriptTests {
 
     private final static Logger logger = Logger.getAnonymousLogger();
 
@@ -189,7 +192,9 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
                                         .functionScoreQuery(
                                                 (QueryBuilders.matchAllQuery()))
                                         .boostMode(CombineFunction.REPLACE)
-                                        .add(ScoreFunctionBuilders.scriptFunction("entity-resolution", "native", params)))
+                                        .scoreMode("max")
+                                        .add(ScoreFunctionBuilders.scriptFunction("entity-resolution", "native", params)).add(ScoreFunctionBuilders.scriptFunction("entity-resolution", "native", params)))
+                                //.add(ScoreFunctionBuilders.scriptFunction("entity-resolution", "native", params)))
                         .setSize(4);
 
         logger.info(request.toString());
@@ -203,22 +208,22 @@ public class EntityResolutionScriptTests extends AbstractSearchScriptTests {
 
         assertThat(searchResponse.getHits().getAt(0).getSource().get("city")
                 .toString(), equalTo("South Portland"));
-        assertThat(searchResponse.getHits().getAt(0).getScore(), equalTo(Float
-                .valueOf("0.97579086").floatValue()));
+        assertThat(searchResponse.getHits().getAt(0).getScore(), equalTo(
+                valueOf("0.97579086")));
 
         assertThat(searchResponse.getHits().getAt(1).getSource().get("city")
                 .toString(), equalTo("Portland"));
-        assertThat(searchResponse.getHits().getAt(1).getScore(), equalTo(Float
-                .valueOf("0.29081574").floatValue()));
+        assertThat(searchResponse.getHits().getAt(1).getScore(), equalTo(
+                valueOf("0.29081574")));
 
         assertThat(searchResponse.getHits().getAt(2).getSource().get("city")
                 .toString(), equalTo("Boston"));
-        assertThat(searchResponse.getHits().getAt(2).getScore(), equalTo(Float
-                .valueOf("0.057230186").floatValue()));
+        assertThat(searchResponse.getHits().getAt(2).getScore(), equalTo(
+                valueOf("0.057230186")));
 
         assertThat(searchResponse.getHits().getAt(3).getSource().get("city")
                 .toString(), equalTo("South Burlington"));
-        assertThat(searchResponse.getHits().getAt(3).getScore(), equalTo(Float
-                .valueOf("0.049316783").floatValue()));
+        assertThat(searchResponse.getHits().getAt(3).getScore(), equalTo(
+                valueOf("0.049316783")));
     }
 }

@@ -1,3 +1,4 @@
+#!/bin/sh
 sh testInit.sh
 echo
 curl -s "localhost:9200/test/city/_search?pretty=true" -d '{
