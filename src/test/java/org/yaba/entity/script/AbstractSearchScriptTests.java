@@ -9,7 +9,7 @@ import org.elasticsearch.test.ElasticsearchIntegrationTest.Scope;
 
 /**
  */
-@ClusterScope(scope = Scope.SUITE, numDataNodes = 0)
+@ClusterScope(scope = Scope.TEST, numDataNodes = 0)
 public class AbstractSearchScriptTests extends ElasticsearchIntegrationTest {
 
     @Override

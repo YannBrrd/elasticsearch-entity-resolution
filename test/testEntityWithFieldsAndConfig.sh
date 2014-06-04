@@ -1,3 +1,4 @@
+#!/bin/sh
 ./testInit.sh
 echo
 curl -XPUT "http://localhost:9200/entity/" -d '{
