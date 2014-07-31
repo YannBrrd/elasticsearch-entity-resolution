@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.yaba</groupId>
     <artifactId>elasticsearch-entity-resolution-plugin</artifactId>
-    <version>1.2.3.0</version>
+    <version>1.3.1.0</version>
     <packaging>jar</packaging>
     <description>ElasticSearch Plugin for Entity Resolution</description>
     <developers>
@@ -50,8 +50,8 @@
     <!-- ============================================================= -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <elasticsearch.version>1.2.3</elasticsearch.version>
-        <lucene.version>4.8.1</lucene.version>
+        <elasticsearch.version>1.3.1</elasticsearch.version>
+        <lucene.version>4.9.0</lucene.version>
         <duke.version>1.2</duke.version>
     </properties>
 
