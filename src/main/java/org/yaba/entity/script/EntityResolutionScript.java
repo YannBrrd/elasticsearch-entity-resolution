@@ -5,6 +5,7 @@ import no.priv.garshol.duke.Comparator;
 import no.priv.garshol.duke.Record;
 import no.priv.garshol.duke.RecordImpl;
 import no.priv.garshol.duke.comparators.Levenshtein;
+import org.apache.lucene.search.Scorer;
 import org.elasticsearch.ElasticsearchIllegalArgumentException;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import static no.priv.garshol.duke.utils.ObjectUtils.instantiate;
 import static no.priv.garshol.duke.utils.ObjectUtils.setBeanProperty;
-import static no.priv.garshol.duke.utils.Utils.*;
+import static no.priv.garshol.duke.utils.Utils.computeBayes;
 
 /**
  *
@@ -122,7 +123,6 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         return cleanList;
     }
 
-
     /**
      * Sets params for cleaners or comparators
      *
@@ -133,7 +133,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         if (params != null) {
             Map<String, String> paramsMap = (Map<String, String>) params;
             for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
-                setBeanProperty(anObject, entry.getKey() , entry.getValue(), null);
+                setBeanProperty(anObject, entry.getKey(), entry.getValue(), null);
             }
         }
     }
@@ -277,6 +277,11 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         } else {
             return ((high - AVERAGE_SCORE) * (sim * sim)) + AVERAGE_SCORE;
         }
+    }
+
+    @Override
+    public void setScorer(Scorer scorer) {
+        // ignore
     }
 
     /**
