@@ -203,9 +203,25 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         for (String propname : r1.getProperties()) {
             Collection<String> vs1 = r1.getValues(propname);
             Collection<String> vs2 = r2.getValues(propname);
+            
+            Boolean v1empty = true;
+            for (String v1 : vs1) {
+                if (v1 != "") {
+                    v1empty = false;
+                    break;
+                }
+            }
 
+            Boolean v2empty = true;
+            for (String v2 : vs2) {
+                if (v2 != "") {
+                    v2empty = false;
+                    break;
+                }
+            }
+            
 
-            if (vs1 == null || vs1.isEmpty() || vs2 == null || vs2.isEmpty()) {
+            if (vs1 == null || vs1.isEmpty() || vs2 == null || vs2.isEmpty() || v1empty || v2empty) {
                 continue; // no values to compare, so skip
             }
 
