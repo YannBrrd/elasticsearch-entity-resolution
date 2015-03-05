@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.yaba</groupId>
     <artifactId>elasticsearch-entity-resolution-plugin</artifactId>
-    <version>1.4.0.0</version>
+    <version>1.4.0.1</version>
     <packaging>jar</packaging>
     <description>ElasticSearch Plugin for Entity Resolution</description>
     <developers>
@@ -22,7 +22,7 @@
             <timezone>+1</timezone>
         </developer>
     </developers>
-    <inceptionYear>2014</inceptionYear>
+    <inceptionYear>2015</inceptionYear>
     <licenses>
         <license>
             <name>GNU LGPL v3</name>
