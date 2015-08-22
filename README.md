@@ -34,6 +34,6 @@ A list of [available comparators] (https://github.com/larsga/Duke/wiki/Comparato
 
 ## Licence 
 
-This project is licended under LGPLv3
+This project is licended under APL V2
 
 Copyright (c) 2014 Yann Barraud
