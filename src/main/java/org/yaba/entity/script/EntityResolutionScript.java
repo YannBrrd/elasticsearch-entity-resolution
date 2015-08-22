@@ -45,6 +45,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     private static final String COMPARATOR = "comparator";
     private static final String CLEANERS = "cleaners";
     private static final String PARAMS = "params";
+    private static final String OBJECTS = "objects";
     private static final String NAME = "name";
     private static final String HIGH = "high";
     private static final String LOW = "low";
@@ -139,6 +140,28 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     }
 
     /**
+     * Sets objects for comparators
+     *
+     * @param anObject the object to parametrize
+     * @param objects  objects list
+     */
+    private static void setObjects(Object anObject, Object objects) {
+        if (objects != null) {
+            Object currentobj;
+            HashMap<String, Object> list = new HashMap<String, Object>();
+            Map<String, HashMap> paramsMap = (Map<String, HashMap>) objects;
+            for (Map.Entry<String, HashMap> entry : paramsMap.entrySet()) {
+                HashMap<String, String> object = entry.getValue();
+                String klass = object.get("class");
+                String name = object.get("name");
+                currentobj = instantiate(klass);
+                list.put(klass, currentobj);
+                setBeanProperty(anObject, name, klass, list);
+            }
+        }
+    }
+
+    /**
      * Gets comparator
      *
      * @param value from JSON payload
@@ -153,6 +176,8 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         Comparator comp = (Comparator) instantiate(comparatorName);
 
         setParams(comp, compEntity.get(PARAMS));
+
+        setObjects(comp, compEntity.get(OBJECTS));
 
         return comp;
     }
@@ -203,7 +228,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         for (String propname : r1.getProperties()) {
             Collection<String> vs1 = r1.getValues(propname);
             Collection<String> vs2 = r2.getValues(propname);
-            
+
             Boolean v1empty = true;
             for (String v1 : vs1) {
                 if (v1 != "") {
@@ -219,7 +244,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                     break;
                 }
             }
-            
+
 
             if (vs1 == null || vs1.isEmpty() || vs2 == null || vs2.isEmpty() || v1empty || v2empty) {
                 continue; // no values to compare, so skip
