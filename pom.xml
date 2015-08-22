@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.yaba</groupId>
     <artifactId>elasticsearch-entity-resolution-plugin</artifactId>
-    <version>1.4.0.1</version>
+    <version>1.5.2.0</version>
     <packaging>jar</packaging>
     <description>ElasticSearch Plugin for Entity Resolution</description>
     <developers>
@@ -25,8 +25,8 @@
     <inceptionYear>2015</inceptionYear>
     <licenses>
         <license>
-            <name>GNU LGPL v3</name>
-            <url>http://www.gnu.org/licenses/lgpl.txt</url>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -50,8 +50,8 @@
     <!-- ============================================================= -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <elasticsearch.version>1.4.0</elasticsearch.version>
-        <lucene.version>4.10.2</lucene.version>
+        <elasticsearch.version>1.5.2</elasticsearch.version>
+        <lucene.version>4.10.4</lucene.version>
         <duke.version>1.2</duke.version>
     </properties>
 
