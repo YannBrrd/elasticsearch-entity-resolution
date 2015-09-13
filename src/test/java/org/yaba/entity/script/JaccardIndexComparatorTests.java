@@ -6,6 +6,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.collect.MapBuilder;
 import org.elasticsearch.common.lucene.search.function.CombineFunction;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptService;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -226,7 +228,7 @@ public class JaccardIndexComparatorTests extends AbstractSearchScriptTests {
                                         (matchAllQuery()))
                                         .boostMode(CombineFunction.REPLACE)
                                         .scoreMode("max")
-                                        .add(ScoreFunctionBuilders.scriptFunction("entity-resolution", "native", params)).add(ScoreFunctionBuilders.scriptFunction("entity-resolution", "native", params)))
+                                        .add(ScoreFunctionBuilders.scriptFunction(new Script(EntityResolutionScript.SCRIPT_NAME, ScriptService.ScriptType.INLINE, "native", params))))
                         .setSize(4);
 
         logger.info(request.toString());

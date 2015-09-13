@@ -6,6 +6,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.collect.MapBuilder;
 import org.elasticsearch.common.lucene.search.function.CombineFunction;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptService;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -90,7 +92,7 @@ public class EntityResolutionScriptScoreTests extends AbstractSearchScriptTests 
                 .setSource(CITY, "South Portland", STATE, "ME",
                         POPULATION, 25002, POSITION, "43.631549,70.272724"));
         indexBuilders.add(client().prepareIndex(TEST, CITY, "4")
-                .setSource(CITY, "Essex", STATE, "VT", POPULATION, 19587, POSITION, "44.492905,73.108601")
+                        .setSource(CITY, "Essex", STATE, "VT", POPULATION, 19587, POSITION, "44.492905,73.108601")
         );
         indexBuilders.add(client()
                 .prepareIndex(TEST, CITY, "5")
@@ -191,7 +193,7 @@ public class EntityResolutionScriptScoreTests extends AbstractSearchScriptTests 
                         .put(COMPARATOR, MapBuilder.<String, Object>newMapBuilder()
                                 .put(NAME, "no.priv.garshol.duke.comparators.GeopositionComparator")
                                 .put("params", MapBuilder.<String, Object>newMapBuilder()
-                                        .put("max-distance", "100").map()
+                                                .put("max-distance", "100").map()
                                 ).map())
                         .put(LOW, 0.1)
                         .put(HIGH, 0.95)
@@ -216,12 +218,15 @@ public class EntityResolutionScriptScoreTests extends AbstractSearchScriptTests 
                         .setQuery(
                                 functionScoreQuery(
                                         (matchAllQuery()))
-                                        .boostMode(CombineFunction.REPLACE)
+                                        .boostMode(CombineFunction.REPLACE.getName())
                                         .scoreMode("max")
-                                        .add(ScoreFunctionBuilders.scriptFunction("entity-resolution", "native", params)).add(ScoreFunctionBuilders.scriptFunction("entity-resolution", "native", params)))
+                                        .add(ScoreFunctionBuilders.scriptFunction(new Script(EntityResolutionScript.SCRIPT_NAME, ScriptService.ScriptType.INLINE, "native", params))))
                         .setSize(4);
 
-        logger.info(request.toString());
+
+
+        logger.info("\n" + request.toString());
+
 
         SearchResponse searchResponse = request.execute().actionGet();
 

@@ -1,17 +1,15 @@
 package org.yaba.entity.script;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import no.priv.garshol.duke.Cleaner;
 import no.priv.garshol.duke.Comparator;
 import no.priv.garshol.duke.Record;
 import no.priv.garshol.duke.RecordImpl;
 import no.priv.garshol.duke.comparators.Levenshtein;
-import org.apache.lucene.search.Scorer;
-import org.elasticsearch.ElasticsearchIllegalArgumentException;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.Nullable;
-import org.elasticsearch.common.cache.Cache;
-import org.elasticsearch.common.cache.CacheBuilder;
 import org.elasticsearch.common.component.AbstractComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
@@ -22,7 +20,7 @@ import org.elasticsearch.node.Node;
 import org.elasticsearch.script.AbstractDoubleSearchScript;
 import org.elasticsearch.script.ExecutableScript;
 import org.elasticsearch.script.NativeScriptFactory;
-import org.elasticsearch.search.lookup.DocLookup;
+import org.elasticsearch.search.lookup.LeafDocLookup;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +39,7 @@ import static no.priv.garshol.duke.utils.Utils.computeBayes;
  *
  */
 public final class EntityResolutionScript extends AbstractDoubleSearchScript {
+    final static public String SCRIPT_NAME = "entity-resolution";
     private static final String FIELDS = "fields";
     private static final String COMPARATOR = "comparator";
     private static final String CLEANERS = "cleaners";
@@ -58,14 +57,17 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
      * . Cache to store configuration
      */
     private final Cache<String, HashMap<String, HashMap<String, Object>>> cache;
+
     /**
      * . Elasticsearch client
      */
     private final Client client;
+
     /**
      * . The record to be compared to
      */
     private Record comparedRecord;
+
     /**
      * . Script parameters
      */
@@ -84,7 +86,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
             final Client aClient) {
 
         if (params.get(FIELDS) == null) {
-            throw new ElasticsearchIllegalArgumentException(
+            throw new IllegalArgumentException(
                     "Missing the 'fields' parameters");
         }
 
@@ -149,7 +151,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     private static void setObjects(Object anObject, Object objects) {
         if (objects != null) {
             Object currentobj;
-            HashMap<String, Object> list = new HashMap<String, Object>();
+            HashMap<String, Object> list = new HashMap<>();
             Map<String, HashMap> paramsMap = (Map<String, HashMap>) objects;
             for (Map.Entry<String, HashMap> entry : paramsMap.entrySet()) {
                 HashMap<String, String> object = entry.getValue();
@@ -205,7 +207,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         }
         if (field instanceof ScriptDocValues.GeoPoints) {
             ScriptDocValues.GeoPoints point = (ScriptDocValues.GeoPoints) field;
-            result = String.format("%s,%s", point.getLat(), point.getLon());
+            result = String.format(Locale.getDefault(), "%s,%s", point.getLat(), point.getLon());
         }
 
         return result;
@@ -232,7 +234,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
 
             Boolean v1empty = true;
             for (String v1 : vs1) {
-                if (v1 != "") {
+                if (!v1.equals("")) {
                     v1empty = false;
                     break;
                 }
@@ -240,14 +242,14 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
 
             Boolean v2empty = true;
             for (String v2 : vs2) {
-                if (v2 != "") {
+                if (!v2.equals("")) {
                     v2empty = false;
                     break;
                 }
             }
 
 
-            if (vs1 == null || vs1.isEmpty() || vs2 == null || vs2.isEmpty() || v1empty || v2empty) {
+            if (vs1.isEmpty() || vs2.isEmpty() || v1empty || v2empty) {
                 continue; // no values to compare, so skip
             }
 
@@ -321,11 +323,6 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         }
     }
 
-    @Override
-    public void setScorer(Scorer scorer) {
-        // ignore
-    }
-
     /**
      * . Configures with data within ES index
      *
@@ -365,7 +362,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                                 .get("entity");
                 entityParams = new HashMap<>();
                 if (entityConf == null) {
-                    throw new ElasticsearchIllegalArgumentException(
+                    throw new IllegalArgumentException(
                             "No conf found in " + configIndex + "/"
                                     + configType + "/" + configName);
                 }
@@ -375,7 +372,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                                 .get("fields");
 
                 if (confFields == null) {
-                    throw new ElasticsearchIllegalArgumentException(
+                    throw new IllegalArgumentException(
                             "Bad conf found in " + configIndex + "/"
                                     + configType + "/" + configName);
                 }
@@ -485,7 +482,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     public double runAsDouble() {
         HashMap<String, Collection<String>> props =
                 new HashMap<>();
-        DocLookup doc = doc();
+        LeafDocLookup doc = doc();
         Collection<String> docKeys = comparedRecord.getProperties();
 
         for (String key : docKeys) {
@@ -525,6 +522,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
          *                 get access to node's client
          * @param settings cluster settings
          */
+        @SuppressWarnings("unchecked")
         @Inject
         public Factory(final Node aNode, final Settings settings) {
             super(settings);
@@ -557,7 +555,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         public final ExecutableScript newScript(
                 @Nullable final Map<String, Object> params) {
             if (params.get("entity") == null) {
-                throw new ElasticsearchIllegalArgumentException(
+                throw new IllegalArgumentException(
                         "Missing the parameters");
             }
 
@@ -565,6 +563,16 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                     (Map<String, Object>) params.get("entity"),
                     cache,
                     node.client());
+        }
+
+        /**
+         * Indicates if document scores may be needed by the produced scripts.
+         *
+         * @return {@code true} if scores are needed.
+         */
+        @Override
+        public boolean needsScores() {
+            return false;
         }
 
     }
