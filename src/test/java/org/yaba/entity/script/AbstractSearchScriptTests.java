@@ -1,26 +1,32 @@
 package org.yaba.entity.script;
 
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.plugins.PluginsService;
-import org.elasticsearch.test.ElasticsearchIntegrationTest;
-import org.elasticsearch.test.ElasticsearchIntegrationTest.ClusterScope;
-import org.elasticsearch.test.ElasticsearchIntegrationTest.Scope;
+import org.elasticsearch.test.ESIntegTestCase;
+import org.elasticsearch.test.ESIntegTestCase.ClusterScope;
+import org.elasticsearch.test.ESIntegTestCase.Scope;
+import org.yaba.entity.plugin.EntityResolutionPlugin;
 
+import static org.elasticsearch.cluster.metadata.IndexMetaData.SETTING_NUMBER_OF_REPLICAS;
+import static org.elasticsearch.cluster.metadata.IndexMetaData.SETTING_NUMBER_OF_SHARDS;
 
 /**
  */
-@ClusterScope(scope = Scope.TEST, numDataNodes = 0)
-public abstract class AbstractSearchScriptTests extends ElasticsearchIntegrationTest {
+@ClusterScope(scope = Scope.SUITE, numDataNodes = 1)
+public abstract class AbstractSearchScriptTests extends ESIntegTestCase {
 
     @Override
-    protected final Settings nodeSettings(int nodeOrdinal) {
-        return ImmutableSettings.settingsBuilder()
-                .put("gateway.type", "none")
-                .put("index.number_of_shards", 1)
-                .put("index.number_of_replicas", 0)
+    public Settings indexSettings() {
+        Settings.Builder builder = Settings.builder();
+        builder.put(SETTING_NUMBER_OF_SHARDS, 1);
+        builder.put(SETTING_NUMBER_OF_REPLICAS, 0);
+        return builder.build();
+    }
+
+    @Override
+    protected Settings nodeSettings(int nodeOrdinal) {
+        return Settings.settingsBuilder()
+                .put("plugin.types", EntityResolutionPlugin.class)
                 .put(super.nodeSettings(nodeOrdinal))
-                .put("plugins." + PluginsService.LOAD_PLUGIN_FROM_CLASSPATH, true)
                 .build();
     }
 }

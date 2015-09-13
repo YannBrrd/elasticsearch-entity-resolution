@@ -1,8 +1,25 @@
+# Temp and test files ignores
+work/
+data/
+logs/
+build/
 target/
+.DS_Store
+*-execution-hints.log
+
+# IDEA ignores
+.idea/
+*.iml
+
+## eclipse ignores
 .project
 .classpath
 .settings
-.checkstyle
-.idea
-data/
-*.iml
+*/.project
+*/.classpath
+*/.settings
+*/eclipse-build
+
+## netbeans ignores
+nb-configuration.xml
+nbactions.xml
