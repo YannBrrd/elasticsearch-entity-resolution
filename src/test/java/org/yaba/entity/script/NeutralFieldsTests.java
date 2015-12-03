@@ -38,7 +38,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.test.hamcrest.ElasticsearchAssertions.assertAcked;
 import static org.hamcrest.Matchers.equalTo;
 
-public class NeutralFieldsTests extends AbstractSearchScriptTests {
+public class NeutralFieldsTests extends AbstractSearchScriptTestCase {
     @Test
     public final void testEntity() throws IOException, ExecutionException, InterruptedException {
 
