@@ -38,7 +38,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.test.hamcrest.ElasticsearchAssertions.assertAcked;
 import static org.hamcrest.Matchers.equalTo;
 
-public class EntityResolutionScriptScoreTests extends AbstractSearchScriptTests {
+public class EntityResolutionScriptScoreTests extends AbstractSearchScriptTestCase {
 
     public static final String CITY = "city";
     public static final String PROPERTIES = "properties";

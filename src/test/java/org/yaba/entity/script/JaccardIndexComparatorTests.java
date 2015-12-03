@@ -38,7 +38,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.test.hamcrest.ElasticsearchAssertions.assertAcked;
 import static org.hamcrest.Matchers.equalTo;
 
-public class JaccardIndexComparatorTests extends AbstractSearchScriptTests {
+public class JaccardIndexComparatorTests extends AbstractSearchScriptTestCase {
 
 
     public static final String CITY = "city";
