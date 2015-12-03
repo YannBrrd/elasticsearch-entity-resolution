@@ -8,12 +8,12 @@
     <parent>
         <groupId>org.elasticsearch.plugin</groupId>
         <artifactId>plugins</artifactId>
-        <version>2.0.0-beta2-SNAPSHOT</version>
+        <version>2.0.0</version>
     </parent>
 
     <groupId>org.yaba</groupId>
     <artifactId>elasticsearch-entity-resolution-plugin</artifactId>
-    <version>2.0.0-beta2-SNAPSHOT</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
     <description>Elasticsearch Plugin for Entity Resolution</description>
     <developers>
@@ -29,7 +29,7 @@
             <timezone>+1</timezone>
         </developer>
     </developers>
-    <inceptionYear>2015</inceptionYear>
+    <inceptionYear>2014</inceptionYear>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
