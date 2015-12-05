@@ -46,10 +46,18 @@
     <properties>
         <!-- define class name for the descriptor file -->
         <elasticsearch.plugin.classname>org.yaba.entity.plugin.EntityResolutionPlugin</elasticsearch.plugin.classname>
+        <elasticsearch.assembly.descriptor>${project.basedir}/src/main/assemblies/plugin-assembly.xml
+        </elasticsearch.assembly.descriptor>
+        <elasticsearch.plugin.site>false</elasticsearch.plugin.site>
+        <elasticsearch.plugin.jvm>true</elasticsearch.plugin.jvm>
 
         <!-- we have custom licence header in this project -->
-        <elasticsearch.license.header>file:///${project.basedir}/dev-tools/src/main/resources/license-check/entity-resolution-license-header.txt</elasticsearch.license.header>
-        <elasticsearch.license.headerDefinition>file:///${project.basedir}/dev-tools/src/main/resources/license-check/license-header-definition.xml</elasticsearch.license.headerDefinition>
+        <elasticsearch.license.header>
+            file:///${project.basedir}/dev-tools/src/main/resources/license-check/entity-resolution-license-header.txt
+        </elasticsearch.license.header>
+        <elasticsearch.license.headerDefinition>
+            file:///${project.basedir}/dev-tools/src/main/resources/license-check/license-header-definition.xml
+        </elasticsearch.license.headerDefinition>
 
         <!-- define where to find integration rest tests -->
         <tests.ifNoTests>warn</tests.ifNoTests>
@@ -69,17 +77,12 @@
         </repository>
     </distributionManagement>
 
-   <dependencies>
-       <dependency>
-           <groupId>no.priv.garshol.duke</groupId>
-           <artifactId>duke</artifactId>
-           <version>${duke.version}</version>
-       </dependency>
-       <dependency>
-           <groupId>com.google.guava</groupId>
-           <artifactId>guava</artifactId>
-           <version>18.0</version>
-       </dependency>
+    <dependencies>
+        <dependency>
+            <groupId>no.priv.garshol.duke</groupId>
+            <artifactId>duke</artifactId>
+            <version>${duke.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -95,6 +98,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>${project.basedir}/src/main/assemblies/plugin.xml</descriptor>
+                    </descriptors>
+                </configuration>
             </plugin>
         </plugins>
     </build>
