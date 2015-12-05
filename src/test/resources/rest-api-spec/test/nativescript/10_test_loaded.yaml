@@ -11,3 +11,4 @@
         nodes.info: {}
 
     - match:  { nodes.$master.plugins.0.name: "elasticsearch-entity-resolution-plugin"  }
+
