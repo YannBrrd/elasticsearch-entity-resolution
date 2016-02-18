@@ -209,19 +209,26 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
         String result = "";
 
         if (field instanceof ScriptDocValues.Strings) {
-            result = ((ScriptDocValues.Strings) field).getValue();
+            if (!((ScriptDocValues.Strings) field).isEmpty()) {
+                result = ((ScriptDocValues.Strings) field).getValue();
+            }
         }
+
         if (field instanceof ScriptDocValues.Doubles) {
-            result =
-                    Double.toString(((ScriptDocValues.Doubles) field)
-                            .getValue());
+            if (!((ScriptDocValues.Doubles) field).isEmpty()) {
+                result = Double.toString(((ScriptDocValues.Doubles) field).getValue());
+            }
         }
         if (field instanceof ScriptDocValues.Longs) {
-            result = Long.toString(((ScriptDocValues.Longs) field).getValue());
+            if (!((ScriptDocValues.Longs) field).isEmpty()) {
+                result = Long.toString(((ScriptDocValues.Longs) field).getValue());
+            }
         }
         if (field instanceof ScriptDocValues.GeoPoints) {
-            ScriptDocValues.GeoPoints point = (ScriptDocValues.GeoPoints) field;
-            result = String.format(Locale.getDefault(), "%s,%s", point.getLat(), point.getLon());
+            if (!((ScriptDocValues.GeoPoints) field).isEmpty()) {
+                ScriptDocValues.GeoPoints point = (ScriptDocValues.GeoPoints) field;
+                result = String.format(Locale.getDefault(), "%s,%s", point.getLat(), point.getLon());
+            }
         }
 
         return result;
@@ -236,6 +243,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
      * @param params Parameters for comparison
      * @return Bayesian probability
      */
+
     private static double compare(
             final Record r1,
             final Record r2,
@@ -501,7 +509,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
 
         for (String key : docKeys) {
             if (doc.containsKey(key)) {
-                String value = getFieldValue(doc.get(key));
+                String value = (doc.get(key) == null ? "" : getFieldValue(doc.get(key)));
                 props.put(key, value == null
                         ? Collections.singleton("")
                         : Collections.singleton(value));
