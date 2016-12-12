@@ -8,12 +8,12 @@
     <parent>
         <groupId>org.elasticsearch.plugin</groupId>
         <artifactId>plugins</artifactId>
-        <version>2.1.2</version>
+        <version>2.2.0</version>
     </parent>
 
     <groupId>org.yaba</groupId>
     <artifactId>elasticsearch-entity-resolution-plugin</artifactId>
-    <version>2.1.2.0</version>
+    <version>2.2.0.0</version>
     <packaging>jar</packaging>
     <description>Elasticsearch Plugin for Entity Resolution</description>
     <developers>
@@ -48,7 +48,7 @@
         <elasticsearch.plugin.classname>org.yaba.entity.plugin.EntityResolutionPlugin</elasticsearch.plugin.classname>
         <elasticsearch.assembly.descriptor>${project.basedir}/src/main/assemblies/plugin-assembly.xml
         </elasticsearch.assembly.descriptor>
-        <elasticsearch.version>2.1.1</elasticsearch.version>
+        <elasticsearch.version>2.2.0</elasticsearch.version>
         <elasticsearch.plugin.site>false</elasticsearch.plugin.site>
         <elasticsearch.plugin.jvm>true</elasticsearch.plugin.jvm>
 
