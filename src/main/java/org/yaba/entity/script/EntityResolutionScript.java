@@ -21,6 +21,8 @@ import no.priv.garshol.duke.Comparator;
 import no.priv.garshol.duke.Record;
 import no.priv.garshol.duke.RecordImpl;
 import no.priv.garshol.duke.comparators.Levenshtein;
+import no.priv.garshol.duke.comparators.WeightedLevenshtein;
+import no.priv.garshol.duke.comparators.WeightedLevenshtein.DefaultWeightEstimator;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.Nullable;
@@ -62,6 +64,7 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
     private static final String NAME = "name";
     private static final String HIGH = "high";
     private static final String LOW = "low";
+    private static final String WEIGHTED_LEVENSHTEIN = "no.priv.garshol.duke.comparators.WeightedLevenshtein";
     /**
      * . Average score
      */
@@ -190,8 +193,19 @@ public final class EntityResolutionScript extends AbstractDoubleSearchScript {
                 ((compEntity.get(NAME) == null) ? Levenshtein.class.getName() : (String) compEntity.get(NAME));
 
 
-        Comparator comp = (Comparator) instantiate(comparatorName);
-
+        //Comparator comp = (Comparator) instantiate(comparatorName);
+        Comparator comp;
+        
+        if(compEntity.get(NAME).equals(WEIGHTED_LEVENSHTEIN)) {
+            WeightedLevenshtein wl = new WeightedLevenshtein();
+            DefaultWeightEstimator we = new DefaultWeightEstimator();
+            setParams(we, compEntity.get(PARAMS));
+            wl.setEstimator(we);
+            comp = (Comparator) wl;
+            return comp;
+        }
+        
+        comp = (Comparator) instantiate(comparatorName);
         setParams(comp, compEntity.get(PARAMS));
 
         setObjects(comp, compEntity.get(OBJECTS));
